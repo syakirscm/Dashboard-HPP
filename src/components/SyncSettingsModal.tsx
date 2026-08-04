@@ -12,6 +12,9 @@ import {
   Sliders,
   AlertTriangle,
   Zap,
+  Share2,
+  CheckCircle2,
+  HelpCircle,
 } from 'lucide-react';
 
 interface SyncSettingsModalProps {
@@ -37,6 +40,7 @@ export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
 }) => {
   const [inputUrl, setInputUrl] = useState(gasUrl);
   const [copied, setCopied] = useState(false);
+  const [copiedShareLink, setCopiedShareLink] = useState(false);
   const [testing, setTesting] = useState(false);
   const [activeTab, setActiveTab] = useState<'config' | 'guide'>('config');
 
@@ -46,6 +50,14 @@ export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
     navigator.clipboard.writeText(GOOGLE_APPS_SCRIPT_SAMPLE_CODE);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleCopyShareLink = () => {
+    if (!inputUrl) return;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?gas_url=${encodeURIComponent(inputUrl.trim())}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedShareLink(true);
+    setTimeout(() => setCopiedShareLink(false), 3000);
   };
 
   const handleSaveAndTest = async () => {
@@ -186,7 +198,7 @@ export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
               </div>
 
               {/* URL Input Form */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
                   URL Google Apps Script Web App
                 </label>
@@ -210,6 +222,58 @@ export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
                 <p className="text-[11px] text-slate-500">
                   Masukkan URL Web App hasil deploy dari Google Apps Script spreadsheet Anda.
                 </p>
+
+                {/* Share Link Generator Box */}
+                {inputUrl ? (
+                  <div className="p-3.5 bg-emerald-50/90 rounded-xl border border-emerald-200 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-950">
+                        <Share2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>Link Berbagi Otomatis untuk Tim/Orang Lain</span>
+                      </div>
+                      <button
+                        onClick={handleCopyShareLink}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg transition-colors shadow-2xs shrink-0"
+                      >
+                        {copiedShareLink ? (
+                          <>
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-200" />
+                            <span>Link Berhasil Disalin!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>Salin Link Berbagi (+ URL Sync)</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-slate-700 leading-relaxed">
+                      💡 <strong>Solusi Mudah Bagikan ke Orang Lain:</strong> Gunakan tombol di atas untuk menyalin link. Kirim link ini ke teman/tim Anda. Saat mereka membuka link ini, URL Web App akan <strong>otomatis terisi & tersimpan di HP/Komputer mereka</strong> tanpa perlu menyetting manual lagi!
+                    </p>
+                  </div>
+                ) : null}
+
+                {/* Info Card: Cara agar URL Permanen untuk Semua Pengunjung */}
+                <div className="p-3.5 bg-blue-50/80 rounded-xl border border-blue-200/80 space-y-2 text-slate-800">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-blue-950">
+                    <HelpCircle className="w-4 h-4 text-blue-600 shrink-0" />
+                    <span>Cara Agar Semua Pengunjung Otomatis Terhubung (Tanpa Setting Manual)</span>
+                  </div>
+                  <div className="text-[11px] text-slate-700 space-y-1.5 leading-relaxed">
+                    <p>
+                      Secara bawaan, simpanan URL tersimpan di <code>localStorage</code> browser Anda sendiri. Jika websitenya dibuka orang lain di HP/laptop berbeda, ada 2 cara agar mereka tidak perlu memasukkan URL lagi:
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 text-[11px] font-medium text-slate-800 pl-1">
+                      <li>
+                        <strong>Opsi 1 (Instan):</strong> Gunakan tombol <em>"Salin Link Berbagi (+ URL Sync)"</em> di atas. Link tersebut berisi parameter khusus yang otomatis mengisi URL Apps Script saat diklik.
+                      </li>
+                      <li>
+                        <strong>Opsi 2 (Permanen):</strong> Masukkan URL Apps Script Anda ke variabel <code>DEFAULT_GAS_URL</code> di file <code>src/config/syncConfig.ts</code>. Dengan begitu, setiap pengunjung yang membuka link website utama akan langsung terhubung tanpa setting apapun!
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               {/* Auto Sync Settings */}

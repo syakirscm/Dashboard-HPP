@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { BOMRow, SyncStatus } from './types/bom';
 import { INITIAL_BOM_DATA } from './data/initialBOM';
+import { DEFAULT_GAS_URL } from './config/syncConfig';
 import { processBOMData } from './utils/bomCalculations';
 import { Header } from './components/Header';
 import { KPICards } from './components/KPICards';
@@ -36,7 +37,25 @@ export default function App() {
   });
 
   const [gasUrl, setGasUrl] = useState<string>(() => {
-    return localStorage.getItem(STORAGE_KEY_GAS_URL) || '';
+    // 1. Check URL query string parameter (?gas_url=... or ?url=...)
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const paramUrl = params.get('gas_url') || params.get('url');
+      if (paramUrl && paramUrl.startsWith('http')) {
+        localStorage.setItem(STORAGE_KEY_GAS_URL, paramUrl);
+        return paramUrl;
+      }
+    }
+    // 2. Check localStorage
+    const saved = localStorage.getItem(STORAGE_KEY_GAS_URL);
+    if (saved) return saved;
+
+    // 3. Fallback to DEFAULT_GAS_URL from config
+    if (DEFAULT_GAS_URL && !DEFAULT_GAS_URL.includes('EXAMPLE_REPLACE')) {
+      return DEFAULT_GAS_URL;
+    }
+
+    return '';
   });
 
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
