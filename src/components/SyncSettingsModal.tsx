@@ -132,21 +132,53 @@ export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
                       : 'Belum terhubung ke Google Apps Script Web App.'}
                   </p>
                   {syncStatus.errorMessage && (
-                    <div className="mt-2 text-[11px] bg-rose-100/90 p-3 rounded-lg border border-rose-300 text-rose-900 space-y-2">
-                      <div className="font-mono font-semibold text-rose-800">
-                        Error: {syncStatus.errorMessage}
+                    <div className="mt-2 text-[11px] bg-rose-100/90 p-3.5 rounded-xl border border-rose-300 text-rose-900 space-y-2.5">
+                      <div className="font-mono font-bold text-rose-800 text-xs flex items-center gap-1.5">
+                        <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                        <span>Pesan Error: {syncStatus.errorMessage}</span>
                       </div>
-                      <div className="pt-2 border-t border-rose-200 text-slate-700 leading-relaxed space-y-1">
-                        <strong className="text-rose-950 font-bold block">Cara Mengatasi Error Ini di Google Apps Script:</strong>
-                        <ol className="list-decimal list-inside space-y-1 text-slate-800 pl-1">
-                          <li>Buka Google Spreadsheet Anda &gt; <strong>Ekstensi (Extensions)</strong> &gt; <strong>Apps Script</strong>.</li>
-                          <li>Klik <strong>Deploy (Terapkan)</strong> &gt; <strong>New deployment (Deployment baru)</strong> atau <strong>Manage deployments</strong>.</li>
-                          <li>Pilih tipe <strong>Web app</strong>.</li>
-                          <li>Atur <strong>Execute as (Jalankan sebagai)</strong>: <span className="bg-white px-1 py-0.5 rounded border border-rose-200 font-bold text-slate-900">Me (Saya)</span>.</li>
-                          <li>Atur <strong>Who has access (Siapa yang memiliki akses)</strong>: <span className="bg-rose-200 text-rose-950 px-1 py-0.5 rounded font-extrabold">Anyone (Siapa saja)</span> <em>(PENTING!)</em>.</li>
-                          <li>Klik <strong>Deploy</strong> / <strong>Update</strong>, berikan izin Google jika diminta.</li>
-                          <li>Salin URL Web App hasil deploy (akhiran <code className="font-mono bg-white px-1 py-0.5 rounded text-slate-800">/exec</code>) dan tempel ke kolom di bawah.</li>
-                        </ol>
+                      <div className="pt-2 border-t border-rose-200/80 text-slate-800 leading-relaxed space-y-2">
+                        <div className="font-bold text-rose-950 text-xs flex items-center gap-1">
+                          <span>💡 Mengapa Error Ini Terjadi?</span>
+                        </div>
+                        <p className="text-[11px] text-slate-700">
+                          Error ini berarti Google Apps Script mengembalikan halaman web/login Google (HTML) dan bukan data JSON. Hal ini terjadi karena <strong>akses Web App belum dibuka untuk publik ("Anyone")</strong> atau <strong>kode belum di-deploy sebagai versi baru</strong>.
+                        </p>
+                        <div className="bg-white/90 p-2.5 rounded-lg border border-rose-200 space-y-1.5 text-slate-800">
+                          <strong className="text-emerald-900 font-bold block text-[11px]">
+                            Langkah Solusi 3 Menit di Google Apps Script:
+                          </strong>
+                          <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-slate-800 pl-0.5">
+                            <li>
+                              Buka Google Spreadsheet &gt; <strong>Ekstensi (Extensions)</strong> &gt; <strong>Apps Script</strong>.
+                            </li>
+                            <li>
+                              Pastikan Anda sudah menempelkan kode dari tab <strong>"Kode Apps Script & Panduan Setup"</strong> di atas.
+                            </li>
+                            <li>
+                              Klik <strong>Deploy (Terapkan)</strong> &gt; <strong>Manage deployments (Kelola pendaftaran)</strong>.
+                            </li>
+                            <li>
+                              Klik <strong>Edit (Ikon Pensil)</strong> pada deployment aktif Anda.
+                            </li>
+                            <li>
+                              Ubah <strong>Who has access (Siapa yang memiliki akses)</strong> menjadi:{' '}
+                              <span className="bg-emerald-100 text-emerald-900 font-extrabold px-1.5 py-0.5 rounded border border-emerald-300">
+                                Anyone (Siapa saja)
+                              </span>{' '}
+                              <span className="text-rose-600 font-bold">*WAJIB</span>
+                            </li>
+                            <li>
+                              Ubah <strong>Version (Versi)</strong> menjadi:{' '}
+                              <span className="bg-slate-100 text-slate-900 font-bold px-1 py-0.5 rounded border border-slate-300">
+                                New version (Versi baru)
+                              </span>
+                            </li>
+                            <li>
+                              Klik <strong>Deploy</strong>, lalu salin URL Web App yang berakhiran <code className="font-mono bg-slate-100 text-slate-900 px-1 py-0.5 rounded">/exec</code> dan simpan di bawah.
+                            </li>
+                          </ol>
+                        </div>
                       </div>
                     </div>
                   )}
