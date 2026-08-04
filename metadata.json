@@ -1,6 +1,6 @@
 {
-  "name": "BOM Dashboard & Google Sheets Sync",
-  "description": "Dashboard Bill of Materials (BOM) interaktif dengan sinkronisasi Google Sheets & Apps Script untuk monitoring HPP, stok pemakaian, dan simulasi biaya produk.",
+  "name": "Dashboard BOM & HPP Produk",
+  "description": "Dashboard Bill of Materials (BOM) interaktif dengan sinkronisasi Apps Script untuk monitoring HPP, stok pemakaian, dan simulasi biaya produk.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

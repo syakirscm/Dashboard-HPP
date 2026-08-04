@@ -100,7 +100,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                   </div>
                   <div>
                     <div className="font-semibold text-slate-800 group-hover:text-emerald-900">Setup Apps Script</div>
-                    <div className="text-[10px] text-slate-500">Hubungkan Google Sheets live sync</div>
+                    <div className="text-[10px] text-slate-500">Hubungkan Web App live sync</div>
                   </div>
                 </button>
 
@@ -117,7 +117,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                   </div>
                   <div>
                     <div className="font-semibold text-slate-800">Refresh Data</div>
-                    <div className="text-[10px] text-slate-500">Tarik ulang data dari Google Sheet</div>
+                    <div className="text-[10px] text-slate-500">Tarik ulang data dari Apps Script</div>
                   </div>
                 </button>
               </div>

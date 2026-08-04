@@ -66,10 +66,10 @@ export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-bold tracking-tight">
-                Integrasi Google Sheets & Google Apps Script
+                Integrasi Apps Script Web App
               </h3>
               <p className="text-xs text-slate-400">
-                Hubungkan spreadsheet BOM Anda untuk sinkronisasi data secara langsung
+                Hubungkan data BOM Anda untuk sinkronisasi otomatis secara langsung
               </p>
             </div>
           </div>

@@ -39,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
         return (
           <span className="inline-flex items-[#047857] items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#ECFDF5] border border-[#A7F3D0]">
             <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981]" />
-            Live Google Sheets
+            Live Sync
           </span>
         );
       case 'syncing':
@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({
         return (
           <span className="inline-flex items-[#4338CA] items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#EEF2FF] border border-[#C7D2FE]">
             <Radio className="w-3.5 h-3.5 text-[#6366F1]" />
-            Simulasi Edit Sheets
+            Simulasi Edit Data
           </span>
         );
       default:
@@ -90,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {getStatusBadge()}
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Sinkronisasi otomatis dengan Google Sheets via Google Apps Script (GAS)
+                Sinkronisasi otomatis resep & HPP via Apps Script (GAS)
               </p>
             </div>
           </div>
