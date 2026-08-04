@@ -1,5 +1,6 @@
 import React from 'react';
 import { SyncStatus } from '../types/bom';
+import { QuickActionsMenu } from './QuickActionsMenu';
 import {
   RefreshCw,
   FileSpreadsheet,
@@ -94,8 +95,21 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons & Menu Khusus */}
           <div className="flex items-center gap-2 flex-wrap">
+            {/* Menu Khusus Dropdown */}
+            <QuickActionsMenu
+              syncStatus={syncStatus}
+              onRefresh={onRefresh}
+              onOpenSyncSettings={onOpenSyncSettings}
+              onOpenBatchCalculator={onOpenBatchCalculator}
+              onOpenSimulateModal={onOpenSimulateModal}
+              onOpenAddModal={onOpenAddModal}
+              onExportCSV={onExportCSV}
+            />
+
+            <div className="h-6 w-px bg-slate-200 mx-0.5 hidden sm:block" />
+
             <button
               id="btn-refresh-data"
               onClick={onRefresh}

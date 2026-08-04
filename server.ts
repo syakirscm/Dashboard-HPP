@@ -40,13 +40,22 @@ async function startServer() {
       }
 
       const text = await response.text();
+      const trimmed = text.trim();
+      if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
+        res.status(422).json({
+          status: 'error',
+          message: 'Google Apps Script mengembalikan halaman HTML (bukan JSON). Pastikan "Who has access" diset ke "Anyone" (Siapa saja) saat Deploy Web App.',
+        });
+        return;
+      }
+
       let jsonData;
       try {
-        jsonData = JSON.parse(text);
+        jsonData = JSON.parse(trimmed);
       } catch {
         res.status(422).json({
           status: 'error',
-          message: 'Respons dari URL Apps Script bukan format JSON yang valid. Pastikan Web App diset ke "Anyone" dan mengembalikan JSON.',
+          message: 'Respons dari URL Apps Script bukan format JSON yang valid. Pastikan Web App diset ke "Anyone".',
         });
         return;
       }

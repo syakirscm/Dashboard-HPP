@@ -79,32 +79,124 @@ export default function App() {
 
     setSyncStatus((prev) => ({ ...prev, status: 'syncing', errorMessage: undefined }));
 
+    const sanitizeErrorMessage = (msg: string): string => {
+      if (!msg) return 'Gagal terhubung ke Google Apps Script Web App.';
+      const lower = msg.toLowerCase();
+      if (
+        lower.includes('unexpected token') ||
+        lower.includes('not valid json') ||
+        lower.includes('json.parse') ||
+        lower.includes('the page') ||
+        lower.includes('doctype') ||
+        lower.includes('html')
+      ) {
+        return 'Google Apps Script mengembalikan halaman Web HTML (bukan JSON). Solusi: Di Google Apps Script, klik Deploy > New deployment > atur "Who has access" ke "Anyone" (Siapa saja) dan gunakan URL Web App berakhiran "/exec".';
+      }
+      if (
+        lower.includes('sign in') ||
+        lower.includes('accounts.google.com') ||
+        lower.includes('google drive') ||
+        lower.includes('access') ||
+        lower.includes('ditolak')
+      ) {
+        return 'Akses ditolak oleh Google. Solusi: Ubah izin "Who has access" (Siapa yang memiliki akses) dari "Only myself" menjadi "Anyone" (Siapa saja) saat Deploy Web App.';
+      }
+      return msg;
+    };
+
+    const safeParseJSON = (text: string) => {
+      if (!text || typeof text !== 'string') return null;
+      const trimmed = text.trim();
+      if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
+        return null;
+      }
+      try {
+        return JSON.parse(trimmed);
+      } catch {
+        return null;
+      }
+    };
+
     try {
-      const response = await fetch('/api/fetch-sheet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: gasUrl }),
-      });
+      let jsonData: any = null;
+      let fetchErrorMessage: string | null = null;
+      const cleanedUrl = gasUrl.trim();
 
-      const json = await response.json();
+      if (!cleanedUrl.startsWith('http')) {
+        throw new Error('URL Google Apps Script tidak valid. URL harus diawali dengan https://script.google.com/macros/s/.../exec');
+      }
 
-      if (json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
-        setRows(json.data);
+      // 1. Try server proxy endpoint first (/api/fetch-sheet)
+      try {
+        const response = await fetch('/api/fetch-sheet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: cleanedUrl }),
+        });
+
+        const rawText = await response.text();
+        const parsed = safeParseJSON(rawText);
+
+        if (parsed) {
+          if (parsed.status === 'success' && Array.isArray(parsed.data)) {
+            jsonData = parsed;
+          } else if (parsed.message) {
+            fetchErrorMessage = sanitizeErrorMessage(parsed.message);
+          }
+        }
+      } catch (proxyErr) {
+        console.warn('API Proxy failed, attempting direct fetch:', proxyErr);
+      }
+
+      // 2. Fallback to direct client-side fetch if server proxy didn't return valid dataset
+      if (!jsonData || !Array.isArray(jsonData.data)) {
+        try {
+          const directResponse = await fetch(cleanedUrl, {
+            method: 'GET',
+            redirect: 'follow',
+          });
+
+          const directText = await directResponse.text();
+          const parsed = safeParseJSON(directText);
+
+          if (parsed) {
+            if (parsed.status === 'success' || Array.isArray(parsed.data)) {
+              jsonData = parsed;
+            } else if (parsed.message) {
+              fetchErrorMessage = sanitizeErrorMessage(parsed.message);
+            }
+          } else {
+            const lowerText = directText.toLowerCase();
+            if (lowerText.includes('google drive') || lowerText.includes('sign in') || lowerText.includes('accounts.google.com')) {
+              throw new Error('Akses ditolak oleh Google. Pastikan "Who has access" diset ke "Anyone" (Siapa saja) saat Deploy Web App di Google Apps Script.');
+            } else {
+              throw new Error('Google Apps Script mengembalikan halaman HTML/Teks (bukan JSON). Pastikan "Who has access" diset ke "Anyone" (Siapa saja) saat Deploy Web App.');
+            }
+          }
+        } catch (directErr) {
+          const msg = directErr instanceof Error ? directErr.message : String(directErr);
+          throw new Error(fetchErrorMessage || sanitizeErrorMessage(msg));
+        }
+      }
+
+      if (jsonData && Array.isArray(jsonData.data) && jsonData.data.length > 0) {
+        setRows(jsonData.data);
         setSyncStatus((prev) => ({
           ...prev,
           status: 'connected',
           lastSync: new Date().toISOString(),
           mode: 'gas',
+          errorMessage: undefined,
         }));
       } else {
-        throw new Error(json.message || 'Gagal memproses data dari Google Apps Script');
+        throw new Error(fetchErrorMessage || 'Data dari Google Apps Script kosong atau tidak berformat sesuai.');
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       setSyncStatus((prev) => ({
         ...prev,
         status: 'error',
-        errorMessage: msg,
+        errorMessage: sanitizeErrorMessage(msg),
       }));
     }
   }, [gasUrl]);

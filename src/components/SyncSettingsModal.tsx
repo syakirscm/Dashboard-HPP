@@ -132,8 +132,22 @@ export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
                       : 'Belum terhubung ke Google Apps Script Web App.'}
                   </p>
                   {syncStatus.errorMessage && (
-                    <div className="mt-2 font-mono text-[11px] bg-white/80 p-2 rounded border border-rose-200 text-rose-700">
-                      Error: {syncStatus.errorMessage}
+                    <div className="mt-2 text-[11px] bg-rose-100/90 p-3 rounded-lg border border-rose-300 text-rose-900 space-y-2">
+                      <div className="font-mono font-semibold text-rose-800">
+                        Error: {syncStatus.errorMessage}
+                      </div>
+                      <div className="pt-2 border-t border-rose-200 text-slate-700 leading-relaxed space-y-1">
+                        <strong className="text-rose-950 font-bold block">Cara Mengatasi Error Ini di Google Apps Script:</strong>
+                        <ol className="list-decimal list-inside space-y-1 text-slate-800 pl-1">
+                          <li>Buka Google Spreadsheet Anda &gt; <strong>Ekstensi (Extensions)</strong> &gt; <strong>Apps Script</strong>.</li>
+                          <li>Klik <strong>Deploy (Terapkan)</strong> &gt; <strong>New deployment (Deployment baru)</strong> atau <strong>Manage deployments</strong>.</li>
+                          <li>Pilih tipe <strong>Web app</strong>.</li>
+                          <li>Atur <strong>Execute as (Jalankan sebagai)</strong>: <span className="bg-white px-1 py-0.5 rounded border border-rose-200 font-bold text-slate-900">Me (Saya)</span>.</li>
+                          <li>Atur <strong>Who has access (Siapa yang memiliki akses)</strong>: <span className="bg-rose-200 text-rose-950 px-1 py-0.5 rounded font-extrabold">Anyone (Siapa saja)</span> <em>(PENTING!)</em>.</li>
+                          <li>Klik <strong>Deploy</strong> / <strong>Update</strong>, berikan izin Google jika diminta.</li>
+                          <li>Salin URL Web App hasil deploy (akhiran <code className="font-mono bg-white px-1 py-0.5 rounded text-slate-800">/exec</code>) dan tempel ke kolom di bawah.</li>
+                        </ol>
+                      </div>
                     </div>
                   )}
                 </div>
