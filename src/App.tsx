@@ -220,6 +220,13 @@ export default function App() {
     }
   }, [gasUrl]);
 
+  // Auto-fetch data from Google Apps Script on initial load if gasUrl exists
+  useEffect(() => {
+    if (gasUrl && !gasUrl.includes('EXAMPLE_REPLACE')) {
+      handleTriggerSync();
+    }
+  }, [gasUrl, handleTriggerSync]);
+
   // Auto-sync interval handler
   useEffect(() => {
     if (!syncStatus.autoSyncEnabled || !gasUrl) return;

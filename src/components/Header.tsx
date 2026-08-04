@@ -3,7 +3,6 @@ import { SyncStatus } from '../types/bom';
 import { QuickActionsMenu } from './QuickActionsMenu';
 import {
   RefreshCw,
-  FileSpreadsheet,
   Calculator,
   Sliders,
   Download,
@@ -79,8 +78,10 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 gap-4">
           {/* Title & Badge */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-sm shrink-0">
-              <FileSpreadsheet className="w-6 h-6" />
+            <div id="scm-logo" className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 flex items-center justify-center text-white shadow-md border border-emerald-400/30 shrink-0 select-none hover:scale-105 transition-transform">
+              <span className="font-extrabold text-xs tracking-widest text-white drop-shadow-xs bg-emerald-950/20 px-1.5 py-0.5 rounded border border-white/20">
+                SCM
+              </span>
             </div>
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
@@ -148,15 +149,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <PlusCircle className="w-3.5 h-3.5 text-slate-600" />
               <span>Tambah Item</span>
-            </button>
-
-            <button
-              id="btn-sync-settings"
-              onClick={onOpenSyncSettings}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 transition-colors shadow-xs"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5" />
-              <span>Setup Apps Script</span>
             </button>
 
             <button
