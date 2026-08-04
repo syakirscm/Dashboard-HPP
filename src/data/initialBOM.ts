@@ -84,7 +84,13 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     bb_pemakaian_qt: null,
     harga_raw_material: null,
     total_harga_raw_material: null,
-    total_harga_fg: 126323,
+    total_harga_fg: 126737,
+    harga_bb: 28,
+    labour_cost: 1.5,
+    overhead: 0.5,
+    total_hpp: 30,
+    margin_scm: 0.38,
+    h_jual_scm: 48,
   },
 
   // Category 2: Adon Fla Cream Cheese
@@ -156,7 +162,13 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     bb_pemakaian_qt: null,
     harga_raw_material: null,
     total_harga_raw_material: null,
-    total_harga_fg: 49403,
+    total_harga_fg: 49256,
+    harga_bb: 124,
+    labour_cost: 6.5,
+    overhead: 3.0,
+    total_hpp: 134,
+    margin_scm: 0.38,
+    h_jual_scm: 215,
   },
 
   // Category 3: Adon Klappy
@@ -270,7 +282,13 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     bb_pemakaian_qt: null,
     harga_raw_material: null,
     total_harga_raw_material: null,
-    total_harga_fg: 201184,
+    total_harga_fg: 201734,
+    harga_bb: 42,
+    labour_cost: 0,
+    overhead: 0,
+    total_hpp: 42,
+    margin_scm: 0.38,
+    h_jual_scm: 68,
   },
 
   // Category 4: Adonan Bola Ubi
@@ -342,7 +360,13 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     bb_pemakaian_qt: null,
     harga_raw_material: null,
     total_harga_raw_material: null,
-    total_harga_fg: 201511,
+    total_harga_fg: 201540,
+    harga_bb: 22,
+    labour_cost: 0,
+    overhead: 0,
+    total_hpp: 22,
+    margin_scm: 0.38,
+    h_jual_scm: 35,
   },
 
   // Category 5: Adonan Kulit Pie
@@ -442,7 +466,13 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     bb_pemakaian_qt: null,
     harga_raw_material: null,
     total_harga_raw_material: null,
-    total_harga_fg: 37986,
+    total_harga_fg: 37606,
+    harga_bb: 17.3,
+    labour_cost: 0,
+    overhead: 0,
+    total_hpp: 17,
+    margin_scm: 0.38,
+    h_jual_scm: 27,
   },
 ];
 
@@ -486,7 +516,13 @@ function doGet(e) {
       bb_pemakaian_qt: headers.findIndex(h => h.includes('pemakaian') || h.includes('bb')),
       harga_raw_material: headers.findIndex(h => h.includes('harga raw')),
       total_harga_raw_material: headers.findIndex(h => h.includes('total harga raw')),
-      total_harga_fg: headers.findIndex(h => h.includes('total harga fg'))
+      total_harga_fg: headers.findIndex(h => h.includes('total harga fg')),
+      harga_bb: headers.findIndex(h => h.includes('harga bb')),
+      labour_cost: headers.findIndex(h => h.includes('labour')),
+      overhead: headers.findIndex(h => h.includes('overhead')),
+      total_hpp: headers.findIndex(h => h.includes('total hpp')),
+      margin_scm: headers.findIndex(h => h.includes('margin')),
+      h_jual_scm: headers.findIndex(h => h.includes('jual'))
     };
 
     var rows = [];
@@ -509,7 +545,13 @@ function doGet(e) {
         bb_pemakaian_qt: !isFG ? (Number(row[colMap.bb_pemakaian_qt]) || Math.abs(Number(row[colMap.minus]) || 0)) : null,
         harga_raw_material: !isFG ? (Number(row[colMap.harga_raw_material]) || 0) : null,
         total_harga_raw_material: !isFG ? (Number(row[colMap.total_harga_raw_material]) || 0) : null,
-        total_harga_fg: isFG ? (Number(row[colMap.total_harga_fg]) || 0) : null
+        total_harga_fg: isFG ? (Number(row[colMap.total_harga_fg]) || 0) : null,
+        harga_bb: isFG && colMap.harga_bb !== -1 ? (Number(row[colMap.harga_bb]) || null) : null,
+        labour_cost: isFG && colMap.labour_cost !== -1 ? (Number(row[colMap.labour_cost]) || null) : null,
+        overhead: isFG && colMap.overhead !== -1 ? (Number(row[colMap.overhead]) || null) : null,
+        total_hpp: isFG && colMap.total_hpp !== -1 ? (Number(row[colMap.total_hpp]) || null) : null,
+        margin_scm: isFG && colMap.margin_scm !== -1 ? (Number(row[colMap.margin_scm]) || null) : null,
+        h_jual_scm: isFG && colMap.h_jual_scm !== -1 ? (Number(row[colMap.h_jual_scm]) || null) : null
       };
       
       rows.push(item);

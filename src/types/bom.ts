@@ -13,6 +13,12 @@ export interface BOMRow {
   harga_raw_material: number | null; // unit price for RM in IDR
   total_harga_raw_material: number | null; // calculated: pemakaian * harga
   total_harga_fg: number | null; // sum of total raw material costs for FG row
+  harga_bb?: number | null; // Raw Material cost per unit FG (Harga BB)
+  labour_cost?: number | null; // Labour Cost per unit
+  overhead?: number | null; // Overhead cost per unit
+  total_hpp?: number | null; // TOTAL HPP per unit = harga_bb + labour_cost + overhead
+  margin_scm?: number | null; // Margin SCM percentage (e.g. 0.38 for 38%)
+  h_jual_scm?: number | null; // H Jual SCM per unit
   updatedAt?: string;
 }
 
@@ -23,7 +29,13 @@ export interface FinishedGoodSummary {
   unit: string;
   yieldQty: number;
   totalBatchCost: number;
-  hppPerUnit: number;
+  hppPerUnit: number; // Same as hargaBB
+  hargaBB: number; // Raw material cost per unit
+  labourCost: number; // Direct labor per unit
+  overheadCost: number; // Overhead per unit
+  totalHPP: number; // Total HPP = hargaBB + labourCost + overheadCost
+  marginSCM: number; // Target margin SCM (e.g. 0.38 for 38%)
+  hJualSCM: number; // Target selling price SCM
   rawMaterialsCount: number;
   ingredients: {
     kode: string;

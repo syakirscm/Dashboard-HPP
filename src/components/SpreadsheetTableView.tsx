@@ -115,6 +115,21 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
         const price = editRowData.harga_raw_material ?? 0;
         editRowData.minus = -Math.abs(usage);
         editRowData.total_harga_raw_material = Math.round(usage * price);
+      } else if (editRowData.tipe_produk === 'finish_goods') {
+        const yieldQty = editRowData.finish_goods || 1;
+        const hargaBB = editRowData.harga_bb ?? (editRowData.total_harga_fg ? editRowData.total_harga_fg / yieldQty : 0);
+        const labour = editRowData.labour_cost ?? 0;
+        const overhead = editRowData.overhead ?? 0;
+        const totalHPP = Math.round((hargaBB + labour + overhead) * 10) / 10;
+        const margin = editRowData.margin_scm ?? 0.38;
+        const hJual = editRowData.h_jual_scm ?? (margin > 0 && margin < 1 ? Math.round(totalHPP / (1 - margin)) : Math.round(totalHPP * 1.38));
+
+        editRowData.harga_bb = Math.round(hargaBB * 10) / 10;
+        editRowData.labour_cost = labour;
+        editRowData.overhead = overhead;
+        editRowData.total_hpp = totalHPP;
+        editRowData.margin_scm = margin;
+        editRowData.h_jual_scm = hJual;
       }
       onUpdateRow(editingRowId, editRowData);
       setEditingRowId(null);
@@ -296,13 +311,19 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
               <th className="py-3 px-3 border-r border-slate-200 text-right">Harga Raw material</th>
               <th className="py-3 px-3 border-r border-slate-200 text-right">Total Harga Raw Material</th>
               <th className="py-3 px-3 border-r border-slate-200 text-right">Total Harga FG</th>
+              <th className="py-3 px-3 border-r border-slate-200 text-right text-amber-900 font-extrabold bg-amber-50/50">Harga BB</th>
+              <th className="py-3 px-3 border-r border-slate-200 text-right">Labour Cost</th>
+              <th className="py-3 px-3 border-r border-slate-200 text-right">Overhead</th>
+              <th className="py-3 px-3 border-r border-slate-200 text-right text-rose-700 font-extrabold bg-rose-50/50">TOTAL HPP</th>
+              <th className="py-3 px-3 border-r border-slate-200 text-center">Margin SCM</th>
+              <th className="py-3 px-3 border-r border-slate-200 text-right text-rose-700 font-extrabold bg-rose-50/50">H Jual SCM</th>
               <th className="py-3 px-3 text-center">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 font-sans">
             {sortedRows.length === 0 ? (
               <tr>
-                <td colSpan={12} className="py-8 text-center text-slate-500">
+                <td colSpan={18} className="py-8 text-center text-slate-500">
                   <FileSpreadsheet className="w-8 h-8 text-slate-300 mx-auto mb-2" />
                   Tidak ada data yang sesuai dengan pencarian/filter.
                 </td>
@@ -494,8 +515,125 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
                     </td>
 
                     {/* Total Harga FG */}
-                    <td className="py-2.5 px-3 border-r border-slate-200 text-right font-mono font-extrabold text-amber-900 text-sm">
+                    <td className="py-2.5 px-3 border-r border-slate-200 text-right font-mono font-extrabold text-amber-950 text-xs">
                       {isFG && row.total_harga_fg ? formatNumber(row.total_harga_fg) : ''}
+                    </td>
+
+                    {/* Harga BB */}
+                    <td className="py-2.5 px-3 border-r border-slate-200 text-right font-mono font-bold text-amber-900 bg-amber-50/30">
+                      {isFG && row.harga_bb !== null && row.harga_bb !== undefined
+                        ? formatNumber(row.harga_bb)
+                        : ''}
+                    </td>
+
+                    {/* Labour Cost */}
+                    <td className="py-2.5 px-3 border-r border-slate-200 text-right font-mono">
+                      {isFG ? (
+                        isEditing ? (
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={editRowData.labour_cost ?? ''}
+                            onChange={(e) =>
+                              setEditRowData({
+                                ...editRowData,
+                                labour_cost: Number(e.target.value),
+                              })
+                            }
+                            className="w-16 px-1.5 py-0.5 border border-emerald-500 rounded text-xs bg-white text-slate-900 text-right"
+                          />
+                        ) : row.labour_cost !== null && row.labour_cost !== undefined ? (
+                          formatNumber(row.labour_cost)
+                        ) : (
+                          ''
+                        )
+                      ) : (
+                        ''
+                      )}
+                    </td>
+
+                    {/* Overhead */}
+                    <td className="py-2.5 px-3 border-r border-slate-200 text-right font-mono">
+                      {isFG ? (
+                        isEditing ? (
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={editRowData.overhead ?? ''}
+                            onChange={(e) =>
+                              setEditRowData({
+                                ...editRowData,
+                                overhead: Number(e.target.value),
+                              })
+                            }
+                            className="w-16 px-1.5 py-0.5 border border-emerald-500 rounded text-xs bg-white text-slate-900 text-right"
+                          />
+                        ) : row.overhead !== null && row.overhead !== undefined ? (
+                          formatNumber(row.overhead)
+                        ) : (
+                          ''
+                        )
+                      ) : (
+                        ''
+                      )}
+                    </td>
+
+                    {/* TOTAL HPP */}
+                    <td className="py-2.5 px-3 border-r border-slate-200 text-right font-mono font-extrabold text-rose-600 bg-rose-50/30 text-sm">
+                      {isFG && row.total_hpp !== null && row.total_hpp !== undefined
+                        ? formatNumber(row.total_hpp)
+                        : ''}
+                    </td>
+
+                    {/* Margin SCM */}
+                    <td className="py-2.5 px-3 border-r border-slate-200 text-center font-mono font-bold text-slate-700">
+                      {isFG ? (
+                        isEditing ? (
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={editRowData.margin_scm ?? 0.38}
+                            onChange={(e) =>
+                              setEditRowData({
+                                ...editRowData,
+                                margin_scm: Number(e.target.value),
+                              })
+                            }
+                            className="w-16 px-1.5 py-0.5 border border-emerald-500 rounded text-xs bg-white text-slate-900 text-center"
+                          />
+                        ) : row.margin_scm !== null && row.margin_scm !== undefined ? (
+                          `${Math.round(row.margin_scm * 100)}%`
+                        ) : (
+                          ''
+                        )
+                      ) : (
+                        ''
+                      )}
+                    </td>
+
+                    {/* H Jual SCM */}
+                    <td className="py-2.5 px-3 border-r border-slate-200 text-right font-mono font-extrabold text-rose-600 bg-rose-50/30 text-sm">
+                      {isFG ? (
+                        isEditing ? (
+                          <input
+                            type="number"
+                            value={editRowData.h_jual_scm ?? ''}
+                            onChange={(e) =>
+                              setEditRowData({
+                                ...editRowData,
+                                h_jual_scm: Number(e.target.value),
+                              })
+                            }
+                            className="w-20 px-1.5 py-0.5 border border-emerald-500 rounded text-xs bg-white text-slate-900 text-right"
+                          />
+                        ) : row.h_jual_scm !== null && row.h_jual_scm !== undefined ? (
+                          formatNumber(row.h_jual_scm)
+                        ) : (
+                          ''
+                        )
+                      ) : (
+                        ''
+                      )}
                     </td>
 
                     {/* Action */}

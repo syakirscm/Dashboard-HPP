@@ -25,6 +25,9 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
   const [usageQty, setUsageQty] = useState<number>(100);
   const [hargaRM, setHargaRM] = useState<number>(50);
   const [yieldFG, setYieldFG] = useState<number>(1000);
+  const [labourCost, setLabourCost] = useState<number>(0);
+  const [overheadCost, setOverheadCost] = useState<number>(0);
+  const [marginSCM, setMarginSCM] = useState<number>(0.38);
 
   if (!isOpen) return null;
 
@@ -49,6 +52,12 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
       harga_raw_material: isFG ? null : hargaRM,
       total_harga_raw_material: isFG ? null : Math.round(usageQty * hargaRM),
       total_harga_fg: isFG ? 0 : null,
+      harga_bb: isFG ? 0 : null,
+      labour_cost: isFG ? labourCost : null,
+      overhead: isFG ? overheadCost : null,
+      total_hpp: isFG ? labourCost + overheadCost : null,
+      margin_scm: isFG ? marginSCM : null,
+      h_jual_scm: isFG ? 0 : null,
     };
 
     onAddItem(newRow);
@@ -211,15 +220,49 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
               </div>
             </div>
           ) : (
-            <div>
-              <label className="block font-bold text-slate-700 uppercase mb-1">Yield Finish Goods</label>
-              <input
-                type="number"
-                value={yieldFG}
-                onChange={(e) => setYieldFG(Number(e.target.value))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
-                required
-              />
+            <div className="space-y-3">
+              <div>
+                <label className="block font-bold text-slate-700 uppercase mb-1">Yield Finish Goods</label>
+                <input
+                  type="number"
+                  value={yieldFG}
+                  onChange={(e) => setYieldFG(Number(e.target.value))}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block font-bold text-slate-700 uppercase mb-1">Labour Cost</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={labourCost}
+                    onChange={(e) => setLabourCost(Number(e.target.value))}
+                    className="w-full px-2 py-1.5 border border-slate-300 rounded-lg font-mono text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 uppercase mb-1">Overhead</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={overheadCost}
+                    onChange={(e) => setOverheadCost(Number(e.target.value))}
+                    className="w-full px-2 py-1.5 border border-slate-300 rounded-lg font-mono text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 uppercase mb-1">Margin SCM</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={marginSCM}
+                    onChange={(e) => setMarginSCM(Number(e.target.value))}
+                    className="w-full px-2 py-1.5 border border-slate-300 rounded-lg font-mono text-xs"
+                  />
+                </div>
+              </div>
             </div>
           )}
 

@@ -48,9 +48,34 @@ export function processBOMData(rows: BOMRow[]): {
     // Update FG row
     let updatedFGRow: BOMRow | undefined;
     if (fgRow) {
+      const yieldQty = fgRow.finish_goods || 1;
+      // Harga BB per unit = total raw material cost / yield
+      const hargaBB = yieldQty > 0 ? Math.round((categoryTotalCost / yieldQty) * 10) / 10 : 0;
+      const labourCost = fgRow.labour_cost ?? 0;
+      const overheadCost = fgRow.overhead ?? 0;
+      
+      // Total HPP = Harga BB + Labour Cost + Overhead
+      const totalHPP = fgRow.total_hpp ?? Math.round((hargaBB + labourCost + overheadCost) * 10) / 10;
+      
+      // Margin SCM %
+      const marginSCM = fgRow.margin_scm ?? 0.38; // default 38%
+      
+      // H Jual SCM
+      const hJualSCM =
+        fgRow.h_jual_scm ??
+        (marginSCM > 0 && marginSCM < 1
+          ? Math.round(totalHPP / (1 - marginSCM))
+          : Math.round(totalHPP * 1.38));
+
       updatedFGRow = {
         ...fgRow,
         total_harga_fg: categoryTotalCost,
+        harga_bb: hargaBB,
+        labour_cost: labourCost,
+        overhead: overheadCost,
+        total_hpp: totalHPP,
+        margin_scm: marginSCM,
+        h_jual_scm: hJualSCM,
       };
     }
 
@@ -63,7 +88,12 @@ export function processBOMData(rows: BOMRow[]): {
     // Build FinishedGoodSummary object for analytics and cards
     if (updatedFGRow) {
       const yieldQty = updatedFGRow.finish_goods || 1;
-      const hppPerUnit = categoryTotalCost / yieldQty;
+      const hargaBB = updatedFGRow.harga_bb || 0;
+      const labourCost = updatedFGRow.labour_cost || 0;
+      const overheadCost = updatedFGRow.overhead || 0;
+      const totalHPP = updatedFGRow.total_hpp || (hargaBB + labourCost + overheadCost);
+      const marginSCM = updatedFGRow.margin_scm || 0.38;
+      const hJualSCM = updatedFGRow.h_jual_scm || 0;
 
       const ingredients = updatedRawMaterials.map((rm) => {
         const totalRM = rm.total_harga_raw_material || 0;
@@ -86,7 +116,13 @@ export function processBOMData(rows: BOMRow[]): {
         unit: updatedFGRow.unit_produk,
         yieldQty: yieldQty,
         totalBatchCost: categoryTotalCost,
-        hppPerUnit: Math.round(hppPerUnit * 100) / 100,
+        hppPerUnit: hargaBB,
+        hargaBB: hargaBB,
+        labourCost: labourCost,
+        overheadCost: overheadCost,
+        totalHPP: totalHPP,
+        marginSCM: marginSCM,
+        hJualSCM: hJualSCM,
         rawMaterialsCount: updatedRawMaterials.length,
         ingredients: ingredients,
       });

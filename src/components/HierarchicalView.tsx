@@ -300,23 +300,50 @@ export const HierarchicalView: React.FC<HierarchicalViewProps> = ({
                   </div>
                 </div>
 
-                {/* HPP Metric Pill */}
-                <div className="flex items-center gap-4 shrink-0 bg-white px-4 py-2 rounded-lg border border-amber-200/80 shadow-2xs">
-                  <div className="text-right">
+                {/* HPP Metric Pills */}
+                <div className="flex items-center gap-3 shrink-0 bg-white px-3 py-2 rounded-xl border border-amber-200/80 shadow-2xs overflow-x-auto">
+                  <div className="text-right px-1">
                     <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                      Total Biaya Batch
+                      Harga BB
                     </span>
-                    <span className="text-sm font-bold text-slate-900">
-                      {formatIDR(fg.totalBatchCost)}
+                    <span className="text-xs font-bold text-amber-950">
+                      Rp {formatNumber(fg.hargaBB)}
                     </span>
                   </div>
-                  <div className="h-7 w-px bg-slate-200" />
-                  <div className="text-right">
-                    <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider block flex items-center gap-1 justify-end">
-                      HPP / {fg.unit}
+                  <div className="h-6 w-px bg-slate-200" />
+                  <div className="text-right px-1">
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+                      Labour
                     </span>
-                    <span className="text-base font-extrabold text-emerald-700">
-                      {formatIDR(fg.hppPerUnit)}
+                    <span className="text-xs font-bold text-slate-700">
+                      Rp {formatNumber(fg.labourCost)}
+                    </span>
+                  </div>
+                  <div className="h-6 w-px bg-slate-200" />
+                  <div className="text-right px-1">
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+                      Overhead
+                    </span>
+                    <span className="text-xs font-bold text-slate-700">
+                      Rp {formatNumber(fg.overheadCost)}
+                    </span>
+                  </div>
+                  <div className="h-6 w-px bg-slate-200" />
+                  <div className="text-right px-1 bg-rose-50/70 rounded-md py-0.5">
+                    <span className="text-[10px] font-extrabold text-rose-700 uppercase tracking-wider block">
+                      TOTAL HPP
+                    </span>
+                    <span className="text-sm font-extrabold text-rose-700">
+                      Rp {formatNumber(fg.totalHPP)}
+                    </span>
+                  </div>
+                  <div className="h-6 w-px bg-slate-200" />
+                  <div className="text-right px-1 bg-emerald-50/70 rounded-md py-0.5">
+                    <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">
+                      H Jual ({Math.round(fg.marginSCM * 100)}%)
+                    </span>
+                    <span className="text-sm font-extrabold text-emerald-700">
+                      Rp {formatNumber(fg.hJualSCM)}
                     </span>
                   </div>
                 </div>
