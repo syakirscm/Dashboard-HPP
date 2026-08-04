@@ -1,0 +1,534 @@
+import { BOMRow } from '../types/bom';
+
+export const INITIAL_BOM_DATA: BOMRow[] = [
+  // Category 1: Adon Fla
+  {
+    id: 'row-1',
+    kategori: 'Adon Fla',
+    kode: 'BB017',
+    nama_produk: 'Fresh Milk',
+    unit_produk: 'liter',
+    tipe_produk: 'raw_materials',
+    minus: -3,
+    finish_goods: null,
+    bb_pemakaian_qt: 3.0,
+    harga_raw_material: 17261,
+    total_harga_raw_material: 51784,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-2',
+    kategori: 'Adon Fla',
+    kode: 'P1001',
+    nama_produk: 'Tepung Fla',
+    unit_produk: 'ktk',
+    tipe_produk: 'raw_materials',
+    minus: -1,
+    finish_goods: null,
+    bb_pemakaian_qt: 1.0,
+    harga_raw_material: 4934,
+    total_harga_raw_material: 4934,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-3',
+    kategori: 'Adon Fla',
+    kode: 'BB024',
+    nama_produk: 'Telur Ayam',
+    unit_produk: 'butir',
+    tipe_produk: 'raw_materials',
+    minus: -30,
+    finish_goods: null,
+    bb_pemakaian_qt: 30.0,
+    harga_raw_material: 1614,
+    total_harga_raw_material: 48405,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-4',
+    kategori: 'Adon Fla',
+    kode: 'BB018',
+    nama_produk: 'Gula Pasir',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -800,
+    finish_goods: null,
+    bb_pemakaian_qt: 800.0,
+    harga_raw_material: 18,
+    total_harga_raw_material: 14000,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-5',
+    kategori: 'Adon Fla',
+    kode: 'P1003',
+    nama_produk: 'Mentega Fla',
+    unit_produk: 'ktk',
+    tipe_produk: 'raw_materials',
+    minus: -1,
+    finish_goods: null,
+    bb_pemakaian_qt: 1.0,
+    harga_raw_material: 7200,
+    total_harga_raw_material: 7200,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-6',
+    kategori: 'Adon Fla',
+    kode: 'P2002',
+    nama_produk: 'Adon Fla',
+    unit_produk: 'gram',
+    tipe_produk: 'finish_goods',
+    minus: 0,
+    finish_goods: 4500,
+    bb_pemakaian_qt: null,
+    harga_raw_material: null,
+    total_harga_raw_material: null,
+    total_harga_fg: 126323,
+  },
+
+  // Category 2: Adon Fla Cream Cheese
+  {
+    id: 'row-7',
+    kategori: 'Adon Fla Cream Cheese',
+    kode: 'BB170',
+    nama_produk: 'Cream Cheese Anchor',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -250,
+    finish_goods: null,
+    bb_pemakaian_qt: 250.0,
+    harga_raw_material: 162,
+    total_harga_raw_material: 40600,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-8',
+    kategori: 'Adon Fla Cream Cheese',
+    kode: 'BB171',
+    nama_produk: 'Whip Cream Brookfarm',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -100,
+    finish_goods: null,
+    bb_pemakaian_qt: 100.0,
+    harga_raw_material: 48.4,
+    total_harga_raw_material: 4840,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-9',
+    kategori: 'Adon Fla Cream Cheese',
+    kode: 'BB172',
+    nama_produk: 'Gula Halus',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -60,
+    finish_goods: null,
+    bb_pemakaian_qt: 60.0,
+    harga_raw_material: 59.1,
+    total_harga_raw_material: 3546,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-10',
+    kategori: 'Adon Fla Cream Cheese',
+    kode: 'BB173',
+    nama_produk: 'Vanili cair',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -2,
+    finish_goods: null,
+    bb_pemakaian_qt: 2.0,
+    harga_raw_material: 208.5,
+    total_harga_raw_material: 417,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-11',
+    kategori: 'Adon Fla Cream Cheese',
+    kode: 'P2015',
+    nama_produk: 'Adon Fla Cream Cheese',
+    unit_produk: 'gram',
+    tipe_produk: 'finish_goods',
+    minus: 0,
+    finish_goods: 400,
+    bb_pemakaian_qt: null,
+    harga_raw_material: null,
+    total_harga_raw_material: null,
+    total_harga_fg: 49403,
+  },
+
+  // Category 3: Adon Klappy
+  {
+    id: 'row-12',
+    kategori: 'Adon Klappy',
+    kode: 'BB017',
+    nama_produk: 'Fresh Milk',
+    unit_produk: 'liter',
+    tipe_produk: 'raw_materials',
+    minus: -3,
+    finish_goods: null,
+    bb_pemakaian_qt: 3.0,
+    harga_raw_material: 17261,
+    total_harga_raw_material: 51784,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-13',
+    kategori: 'Adon Klappy',
+    kode: 'BB018',
+    nama_produk: 'Gula Pasir',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -800,
+    finish_goods: null,
+    bb_pemakaian_qt: 800.0,
+    harga_raw_material: 18,
+    total_harga_raw_material: 14000,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-14',
+    kategori: 'Adon Klappy',
+    kode: 'BB020',
+    nama_produk: 'Kelapa Muda',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -250,
+    finish_goods: null,
+    bb_pemakaian_qt: 250.0,
+    harga_raw_material: 155.6,
+    total_harga_raw_material: 38900,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-15',
+    kategori: 'Adon Klappy',
+    kode: 'BB024',
+    nama_produk: 'Telur Ayam',
+    unit_produk: 'butir',
+    tipe_produk: 'raw_materials',
+    minus: -30,
+    finish_goods: null,
+    bb_pemakaian_qt: 30.0,
+    harga_raw_material: 1614,
+    total_harga_raw_material: 48405,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-16',
+    kategori: 'Adon Klappy',
+    kode: 'P1002',
+    nama_produk: 'Tepung Klappy #1',
+    unit_produk: 'ktk',
+    tipe_produk: 'raw_materials',
+    minus: -1,
+    finish_goods: null,
+    bb_pemakaian_qt: 1.0,
+    harga_raw_material: 5831,
+    total_harga_raw_material: 5831,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-17',
+    kategori: 'Adon Klappy',
+    kode: 'P1004',
+    nama_produk: 'Mentega Klappy #1',
+    unit_produk: 'ktk',
+    tipe_produk: 'raw_materials',
+    minus: -1,
+    finish_goods: null,
+    bb_pemakaian_qt: 1.0,
+    harga_raw_material: 7200,
+    total_harga_raw_material: 7200,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-18',
+    kategori: 'Adon Klappy',
+    kode: 'BB165',
+    nama_produk: 'Almond Bakar',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -180,
+    finish_goods: null,
+    bb_pemakaian_qt: 180.0,
+    harga_raw_material: 194.8,
+    total_harga_raw_material: 35064,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-19',
+    kategori: 'Adon Klappy',
+    kode: 'P2003',
+    nama_produk: 'Adon Klappy',
+    unit_produk: 'gram',
+    tipe_produk: 'finish_goods',
+    minus: 0,
+    finish_goods: 4800,
+    bb_pemakaian_qt: null,
+    harga_raw_material: null,
+    total_harga_raw_material: null,
+    total_harga_fg: 201184,
+  },
+
+  // Category 4: Adonan Bola Ubi
+  {
+    id: 'row-20',
+    kategori: 'Adonan Bola Ubi',
+    kode: 'BB143',
+    nama_produk: 'Ubi Ungu',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -10000,
+    finish_goods: null,
+    bb_pemakaian_qt: 10000.0,
+    harga_raw_material: 18,
+    total_harga_raw_material: 180000,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-21',
+    kategori: 'Adonan Bola Ubi',
+    kode: 'BB018',
+    nama_produk: 'Gula Pasir',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -550,
+    finish_goods: null,
+    bb_pemakaian_qt: 550.0,
+    harga_raw_material: 17.5,
+    total_harga_raw_material: 9625,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-22',
+    kategori: 'Adonan Bola Ubi',
+    kode: 'BB026',
+    nama_produk: 'Tepung Maizena',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -550,
+    finish_goods: null,
+    bb_pemakaian_qt: 550.0,
+    harga_raw_material: 20.7,
+    total_harga_raw_material: 11385,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-23',
+    kategori: 'Adonan Bola Ubi',
+    kode: 'BB052',
+    nama_produk: 'Garam Halus',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -35,
+    finish_goods: null,
+    bb_pemakaian_qt: 35.0,
+    harga_raw_material: 14.3,
+    total_harga_raw_material: 501,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-24',
+    kategori: 'Adonan Bola Ubi',
+    kode: 'P2014',
+    nama_produk: 'Adonan Bola Ubi',
+    unit_produk: 'gram',
+    tipe_produk: 'finish_goods',
+    minus: 0,
+    finish_goods: 9000,
+    bb_pemakaian_qt: null,
+    harga_raw_material: null,
+    total_harga_raw_material: null,
+    total_harga_fg: 201511,
+  },
+
+  // Category 5: Adonan Kulit Pie
+  {
+    id: 'row-25',
+    kategori: 'Adonan Kulit Pie',
+    kode: 'BB022',
+    nama_produk: 'Mentega Palmboom',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -650,
+    finish_goods: null,
+    bb_pemakaian_qt: 650.0,
+    harga_raw_material: 17.1,
+    total_harga_raw_material: 11115,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-26',
+    kategori: 'Adonan Kulit Pie',
+    kode: 'BB024',
+    nama_produk: 'Telur Ayam',
+    unit_produk: 'butir',
+    tipe_produk: 'raw_materials',
+    minus: -6,
+    finish_goods: null,
+    bb_pemakaian_qt: 6.0,
+    harga_raw_material: 1613.5,
+    total_harga_raw_material: 9681,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-27',
+    kategori: 'Adonan Kulit Pie',
+    kode: 'BB025',
+    nama_produk: 'Tepung Gula',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -252,
+    finish_goods: null,
+    bb_pemakaian_qt: 252.0,
+    harga_raw_material: 22.3,
+    total_harga_raw_material: 5620,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-28',
+    kategori: 'Adonan Kulit Pie',
+    kode: 'BB027',
+    nama_produk: 'Tepung Terigu',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -1200,
+    finish_goods: null,
+    bb_pemakaian_qt: 1200.0,
+    harga_raw_material: 9.2,
+    total_harga_raw_material: 11040,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-29',
+    kategori: 'Adonan Kulit Pie',
+    kode: 'BB028',
+    nama_produk: 'Vanili',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -2,
+    finish_goods: null,
+    bb_pemakaian_qt: 2.0,
+    harga_raw_material: 222.0,
+    total_harga_raw_material: 444,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-30',
+    kategori: 'Adonan Kulit Pie',
+    kode: 'BB052',
+    nama_produk: 'Garam Halus',
+    unit_produk: 'gram',
+    tipe_produk: 'raw_materials',
+    minus: -6,
+    finish_goods: null,
+    bb_pemakaian_qt: 6.0,
+    harga_raw_material: 14.3,
+    total_harga_raw_material: 86,
+    total_harga_fg: null,
+  },
+  {
+    id: 'row-31',
+    kategori: 'Adonan Kulit Pie',
+    kode: 'P2001',
+    nama_produk: 'Adonan Kulit Pie',
+    unit_produk: 'gram',
+    tipe_produk: 'finish_goods',
+    minus: 0,
+    finish_goods: 2192,
+    bb_pemakaian_qt: null,
+    harga_raw_material: null,
+    total_harga_raw_material: null,
+    total_harga_fg: 37986,
+  },
+];
+
+export const GOOGLE_APPS_SCRIPT_SAMPLE_CODE = `/**
+ * Google Apps Script - BOM Live Synchronizer
+ * 
+ * Instructions:
+ * 1. Open your Google Spreadsheet containing the BOM table.
+ * 2. Go to Extensions > Apps Script.
+ * 3. Delete existing content and paste this entire code block.
+ * 4. Click 'Deploy' > 'New deployment'.
+ * 5. Select type: 'Web app'.
+ * 6. Set Description: "BOM Web API".
+ * 7. Set 'Execute as': "Me".
+ * 8. Set 'Who has access': "Anyone" (crucial for live sync).
+ * 9. Copy the Web App URL and paste it into the BOM Dashboard settings!
+ */
+
+function doGet(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = sheet.getDataRange().getValues();
+    
+    if (data.length <= 1) {
+      return responseJSON({ status: 'error', message: 'Sheet is empty or missing headers' });
+    }
+
+    var headers = data[0].map(function(h) {
+      return String(h).trim().toLowerCase();
+    });
+    
+    // Map column positions dynamically
+    var colMap = {
+      kategori: headers.findIndex(h => h.includes('kategori')),
+      kode: headers.findIndex(h => h.includes('kode')),
+      nama_produk: headers.findIndex(h => h.includes('nama') || h.includes('produk')),
+      unit_produk: headers.findIndex(h => h.includes('unit')),
+      tipe_produk: headers.findIndex(h => h.includes('tipe')),
+      minus: headers.findIndex(h => h.includes('minus')),
+      finish_goods: headers.findIndex(h => h.includes('finish') || h.includes('fg')),
+      bb_pemakaian_qt: headers.findIndex(h => h.includes('pemakaian') || h.includes('bb')),
+      harga_raw_material: headers.findIndex(h => h.includes('harga raw')),
+      total_harga_raw_material: headers.findIndex(h => h.includes('total harga raw')),
+      total_harga_fg: headers.findIndex(h => h.includes('total harga fg'))
+    };
+
+    var rows = [];
+    for (var i = 1; i < data.length; i++) {
+      var row = data[i];
+      if (!row[colMap.kategori] && !row[colMap.nama_produk]) continue;
+
+      var tipe = String(row[colMap.tipe_produk] || '').toLowerCase().trim();
+      var isFG = tipe.includes('finish') || tipe === 'fg';
+
+      var item = {
+        id: 'row-' + i,
+        kategori: String(row[colMap.kategori] || ''),
+        kode: String(row[colMap.kode] || ''),
+        nama_produk: String(row[colMap.nama_produk] || ''),
+        unit_produk: String(row[colMap.unit_produk] || ''),
+        tipe_produk: isFG ? 'finish_goods' : 'raw_materials',
+        minus: Number(row[colMap.minus]) || 0,
+        finish_goods: isFG ? (Number(row[colMap.finish_goods]) || 0) : null,
+        bb_pemakaian_qt: !isFG ? (Number(row[colMap.bb_pemakaian_qt]) || Math.abs(Number(row[colMap.minus]) || 0)) : null,
+        harga_raw_material: !isFG ? (Number(row[colMap.harga_raw_material]) || 0) : null,
+        total_harga_raw_material: !isFG ? (Number(row[colMap.total_harga_raw_material]) || 0) : null,
+        total_harga_fg: isFG ? (Number(row[colMap.total_harga_fg]) || 0) : null
+      };
+      
+      rows.push(item);
+    }
+
+    return responseJSON({
+      status: 'success',
+      count: rows.length,
+      timestamp: new Date().toISOString(),
+      data: rows
+    });
+
+  } catch (err) {
+    return responseJSON({ status: 'error', message: err.toString() });
+  }
+}
+
+function responseJSON(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+`;
