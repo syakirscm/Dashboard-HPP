@@ -27,6 +27,8 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [filterKode, setFilterKode] = useState<string>('');
+  const [filterNama, setFilterNama] = useState<string>('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const [sortField, setSortField] = useState<keyof BOMRow>('kategori');
   const [sortAsc, setSortAsc] = useState(true);
@@ -35,7 +37,9 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editRowData, setEditRowData] = useState<Partial<BOMRow>>({});
 
-  const categories = Array.from(new Set(rows.map((r) => r.kategori)));
+  const categories = Array.from(new Set(rows.map((r) => r.kategori).filter(Boolean))).sort();
+  const uniqueCodes = Array.from(new Set(rows.map((r) => r.kode).filter(Boolean))).sort();
+  const uniqueProductNames = Array.from(new Set(rows.map((r) => r.nama_produk).filter(Boolean))).sort();
 
   const handleSort = (field: keyof BOMRow) => {
     if (sortField === field) {
@@ -46,16 +50,40 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
     }
   };
 
+  const isFilterActive =
+    selectedCategory !== 'ALL' ||
+    filterKode !== '' ||
+    filterNama !== '' ||
+    selectedType !== 'ALL' ||
+    searchTerm !== '';
+
+  const handleResetFilters = () => {
+    setSelectedCategory('ALL');
+    setFilterKode('');
+    setFilterNama('');
+    setSelectedType('ALL');
+    setSearchTerm('');
+  };
+
   const filteredRows = rows.filter((r) => {
+    const matchesCat =
+      selectedCategory === 'ALL' || r.kategori === selectedCategory;
+
+    const matchesKode =
+      !filterKode || r.kode.toLowerCase().includes(filterKode.toLowerCase());
+
+    const matchesNama =
+      !filterNama || r.nama_produk.toLowerCase().includes(filterNama.toLowerCase());
+
+    const matchesType = selectedType === 'ALL' || r.tipe_produk === selectedType;
+
     const matchesSearch =
+      !searchTerm ||
       r.nama_produk.toLowerCase().includes(searchTerm.toLowerCase()) ||
       r.kode.toLowerCase().includes(searchTerm.toLowerCase()) ||
       r.kategori.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesCat = selectedCategory === 'ALL' || r.kategori === selectedCategory;
-    const matchesType = selectedType === 'ALL' || r.tipe_produk === selectedType;
-
-    return matchesSearch && matchesCat && matchesType;
+    return matchesCat && matchesKode && matchesNama && matchesType && matchesSearch;
   });
 
   const sortedRows = [...filteredRows].sort((a, b) => {
@@ -96,27 +124,50 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
       {/* Table Header Controls */}
-      <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 flex-wrap flex-1">
-          {/* Search Box */}
-          <div className="relative min-w-[200px] flex-1 max-w-xs">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-            <input
-              type="text"
-              placeholder="Cari kode, nama produk, kategori..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
+      <div className="p-4 border-b border-slate-200 bg-slate-50/50 space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-emerald-600" />
+            <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+              Filter Data Spreadsheet
+            </span>
+            {isFilterActive && (
+              <button
+                onClick={handleResetFilters}
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-2 py-0.5 rounded border border-rose-200 transition-colors ml-2"
+              >
+                <X className="w-3 h-3" />
+                Reset Filter
+              </button>
+            )}
           </div>
 
-          {/* Filter Category */}
-          <div className="flex items-center gap-1.5">
-            <Filter className="w-3.5 h-3.5 text-slate-500" />
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500">
+              Menampilkan <strong className="text-slate-800">{sortedRows.length}</strong> dari{' '}
+              {rows.length} baris
+            </span>
+            <button
+              onClick={onOpenAddModal}
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors ml-2"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Tambah Baris</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 3 Main Filter Controls: Kategori | Kode Baru | nama produk */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+          {/* 1. Filter Kategori */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+              Kategori
+            </label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700 font-medium"
+              className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800 font-medium"
             >
               <option value="ALL">Semua Kategori ({categories.length})</option>
               {categories.map((cat) => (
@@ -127,30 +178,81 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
             </select>
           </div>
 
-          {/* Filter Type */}
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700 font-medium"
-          >
-            <option value="ALL">Semua Tipe Produk</option>
-            <option value="raw_materials">raw_materials</option>
-            <option value="finish_goods">finish_goods</option>
-          </select>
-        </div>
+          {/* 2. Filter Kode Baru */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+              Kode Baru
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                list="kode-baru-list"
+                placeholder="Filter Kode Baru..."
+                value={filterKode}
+                onChange={(e) => setFilterKode(e.target.value)}
+                className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800 font-mono"
+              />
+              <datalist id="kode-baru-list">
+                {uniqueCodes.map((code) => (
+                  <option key={code} value={code} />
+                ))}
+              </datalist>
+              {filterKode && (
+                <button
+                  onClick={() => setFilterKode('')}
+                  className="absolute right-2 top-2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500">
-            Menampilkan <strong className="text-slate-800">{sortedRows.length}</strong> dari{' '}
-            {rows.length} baris
-          </span>
-          <button
-            onClick={onOpenAddModal}
-            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors ml-2"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Tambah Baris</span>
-          </button>
+          {/* 3. Filter nama produk */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+              nama produk
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                list="nama-produk-list"
+                placeholder="Filter nama produk..."
+                value={filterNama}
+                onChange={(e) => setFilterNama(e.target.value)}
+                className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800"
+              />
+              <datalist id="nama-produk-list">
+                {uniqueProductNames.map((name) => (
+                  <option key={name} value={name} />
+                ))}
+              </datalist>
+              {filterNama && (
+                <button
+                  onClick={() => setFilterNama('')}
+                  className="absolute right-2 top-2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Search Box / Tipe Produk */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+              Tipe Produk
+            </label>
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800 font-medium"
+            >
+              <option value="ALL">Semua Tipe Produk</option>
+              <option value="raw_materials">raw_materials (Bahan Baku)</option>
+              <option value="finish_goods">finish_goods (Produk Jadi)</option>
+            </select>
+          </div>
         </div>
       </div>
 

@@ -11,6 +11,7 @@ import {
   X,
   PieChart as PieIcon,
   ShoppingBag,
+  Filter,
 } from 'lucide-react';
 
 interface HierarchicalViewProps {
@@ -35,6 +36,45 @@ export const HierarchicalView: React.FC<HierarchicalViewProps> = ({
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editPrice, setEditPrice] = useState<number>(0);
   const [editQty, setEditQty] = useState<number>(0);
+
+  // Filter States for Kategori, Kode Baru, and nama produk
+  const [filterKategori, setFilterKategori] = useState<string>('ALL');
+  const [filterKode, setFilterKode] = useState<string>('');
+  const [filterNama, setFilterNama] = useState<string>('');
+
+  const categories = Array.from(new Set(allRows.map((r) => r.kategori).filter(Boolean))).sort();
+  const uniqueCodes = Array.from(new Set(allRows.map((r) => r.kode).filter(Boolean))).sort();
+  const uniqueProductNames = Array.from(new Set(allRows.map((r) => r.nama_produk).filter(Boolean))).sort();
+
+  const isFilterActive =
+    filterKategori !== 'ALL' || filterKode !== '' || filterNama !== '';
+
+  const handleResetFilters = () => {
+    setFilterKategori('ALL');
+    setFilterKode('');
+    setFilterNama('');
+  };
+
+  const filteredFgSummaries = fgSummaries.filter((fg) => {
+    const matchesCat =
+      filterKategori === 'ALL' || fg.kategori === filterKategori;
+
+    const matchesKode =
+      !filterKode ||
+      fg.kode.toLowerCase().includes(filterKode.toLowerCase()) ||
+      fg.ingredients.some((ing) =>
+        ing.kode.toLowerCase().includes(filterKode.toLowerCase())
+      );
+
+    const matchesNama =
+      !filterNama ||
+      fg.nama.toLowerCase().includes(filterNama.toLowerCase()) ||
+      fg.ingredients.some((ing) =>
+        ing.nama.toLowerCase().includes(filterNama.toLowerCase())
+      );
+
+    return matchesCat && matchesKode && matchesNama;
+  });
 
   const toggleCategory = (cat: string) => {
     setExpandedCats((prev) => ({ ...prev, [cat]: !prev[cat] }));
@@ -67,7 +107,7 @@ export const HierarchicalView: React.FC<HierarchicalViewProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
             <PackageCheck className="w-5 h-5 text-emerald-600" />
@@ -101,8 +141,121 @@ export const HierarchicalView: React.FC<HierarchicalViewProps> = ({
         </div>
       </div>
 
+      {/* Filter Card for Hierarchical View */}
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-emerald-600" />
+            <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+              Filter Resep & Bahan
+            </span>
+          </div>
+          {isFilterActive && (
+            <button
+              onClick={handleResetFilters}
+              className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-2 py-0.5 rounded border border-rose-200 transition-colors"
+            >
+              <X className="w-3 h-3" />
+              Reset Filter
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* 1. Filter Kategori */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+              Kategori
+            </label>
+            <select
+              value={filterKategori}
+              onChange={(e) => setFilterKategori(e.target.value)}
+              className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800 font-medium"
+            >
+              <option value="ALL">Semua Kategori ({categories.length})</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 2. Filter Kode Baru */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+              Kode Baru
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                list="hierarchical-kode-list"
+                placeholder="Cari Kode Baru..."
+                value={filterKode}
+                onChange={(e) => setFilterKode(e.target.value)}
+                className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800 font-mono"
+              />
+              <datalist id="hierarchical-kode-list">
+                {uniqueCodes.map((code) => (
+                  <option key={code} value={code} />
+                ))}
+              </datalist>
+              {filterKode && (
+                <button
+                  onClick={() => setFilterKode('')}
+                  className="absolute right-2 top-2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* 3. Filter nama produk */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+              nama produk
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                list="hierarchical-nama-list"
+                placeholder="Cari nama produk / bahan..."
+                value={filterNama}
+                onChange={(e) => setFilterNama(e.target.value)}
+                className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800"
+              />
+              <datalist id="hierarchical-nama-list">
+                {uniqueProductNames.map((name) => (
+                  <option key={name} value={name} />
+                ))}
+              </datalist>
+              {filterNama && (
+                <button
+                  onClick={() => setFilterNama('')}
+                  className="absolute right-2 top-2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-5">
-        {fgSummaries.map((fg) => {
+        {filteredFgSummaries.length === 0 ? (
+          <div className="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-500">
+            Tidak ada resep yang sesuai dengan filter yang dipilih.
+            <button
+              onClick={handleResetFilters}
+              className="mt-2 block mx-auto text-xs text-emerald-600 hover:underline font-semibold"
+            >
+              Reset semua filter
+            </button>
+          </div>
+        ) : (
+          filteredFgSummaries.map((fg) => {
           const isExpanded = expandedCats[fg.kategori] ?? true;
           const fgRowObj = allRows.find(
             (r) => r.kategori === fg.kategori && r.tipe_produk === 'finish_goods'
@@ -409,7 +562,8 @@ export const HierarchicalView: React.FC<HierarchicalViewProps> = ({
               )}
             </div>
           );
-        })}
+        })
+      )}
       </div>
     </div>
   );
