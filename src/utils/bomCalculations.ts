@@ -54,18 +54,18 @@ export function processBOMData(rows: BOMRow[]): {
       const labourCost = fgRow.labour_cost ?? 0;
       const overheadCost = fgRow.overhead ?? 0;
       
-      // Total HPP = Harga BB + Labour Cost + Overhead
-      const totalHPP = fgRow.total_hpp ?? Math.round((hargaBB + labourCost + overheadCost) * 10) / 10;
+      // Total HPP = Harga BB + Labour Cost + Overhead (dynamically recalculated)
+      const calculatedHPP = Math.round((hargaBB + labourCost + overheadCost) * 100) / 100;
+      const totalHPP = calculatedHPP > 0 ? calculatedHPP : (fgRow.total_hpp ?? 0);
       
       // Margin SCM %
       const marginSCM = fgRow.margin_scm ?? 0.38; // default 38%
       
-      // H Jual SCM
+      // H Jual SCM dynamically calculated based on live totalHPP
       const hJualSCM =
-        fgRow.h_jual_scm ??
-        (marginSCM > 0 && marginSCM < 1
+        marginSCM > 0 && marginSCM < 1
           ? Math.round(totalHPP / (1 - marginSCM))
-          : Math.round(totalHPP * 1.38));
+          : Math.round(totalHPP * 1.38);
 
       updatedFGRow = {
         ...fgRow,

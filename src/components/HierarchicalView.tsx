@@ -312,20 +312,20 @@ export const HierarchicalView: React.FC<HierarchicalViewProps> = ({
                   </div>
                   <div className="h-6 w-px bg-slate-200" />
                   <div className="text-right px-1">
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                      Labour
+                    <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
+                      Labour / {fg.unit}
                     </span>
-                    <span className="text-xs font-bold text-slate-700">
-                      Rp {formatNumber(fg.labourCost)}
+                    <span className="text-xs font-bold text-slate-800 font-mono">
+                      Rp {formatNumber(fg.labourCost)} <span className="text-[10px] font-normal text-slate-500">/{fg.unit}</span>
                     </span>
                   </div>
                   <div className="h-6 w-px bg-slate-200" />
                   <div className="text-right px-1">
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                      Overhead
+                    <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
+                      Overhead / {fg.unit}
                     </span>
-                    <span className="text-xs font-bold text-slate-700">
-                      Rp {formatNumber(fg.overheadCost)}
+                    <span className="text-xs font-bold text-slate-800 font-mono">
+                      Rp {formatNumber(fg.overheadCost)} <span className="text-[10px] font-normal text-slate-500">/{fg.unit}</span>
                     </span>
                   </div>
                   <div className="h-6 w-px bg-slate-200" />

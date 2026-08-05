@@ -12,6 +12,7 @@ import { SyncSettingsModal } from './components/SyncSettingsModal';
 import { BatchCalculatorModal } from './components/BatchCalculatorModal';
 import { SimulateSheetUpdateModal } from './components/SimulateSheetUpdateModal';
 import { AddItemModal } from './components/AddItemModal';
+import { SpreadsheetTemplateModal } from './components/SpreadsheetTemplateModal';
 import {
   Layers,
   Table as TableIcon,
@@ -74,6 +75,7 @@ export default function App() {
   const [isBatchCalcOpen, setIsBatchCalcOpen] = useState(false);
   const [isSimulateOpen, setIsSimulateOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
 
   // Persist rows to localStorage
   useEffect(() => {
@@ -326,6 +328,7 @@ export default function App() {
         onOpenSimulateModal={() => setIsSimulateOpen(true)}
         onOpenAddModal={() => setIsAddModalOpen(true)}
         onExportCSV={handleExportCSV}
+        onOpenTemplateModal={() => setIsTemplateModalOpen(true)}
       />
 
       {/* Main Container */}
@@ -339,11 +342,11 @@ export default function App() {
 
         {/* View Switching Navigation Tabs */}
         <div className="flex items-center justify-between border-b border-slate-200 mb-6 pb-2">
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
             <button
               id="tab-hierarchy"
               onClick={() => setActiveTab('hierarchy')}
-              className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-colors ${
+              className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                 activeTab === 'hierarchy'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-white text-slate-600 hover:bg-slate-200/60 border border-slate-200'
@@ -356,7 +359,7 @@ export default function App() {
             <button
               id="tab-table"
               onClick={() => setActiveTab('table')}
-              className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-colors ${
+              className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                 activeTab === 'table'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-white text-slate-600 hover:bg-slate-200/60 border border-slate-200'
@@ -369,7 +372,7 @@ export default function App() {
             <button
               id="tab-analytics"
               onClick={() => setActiveTab('analytics')}
-              className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-colors ${
+              className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                 activeTab === 'analytics'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-white text-slate-600 hover:bg-slate-200/60 border border-slate-200'
@@ -432,6 +435,12 @@ export default function App() {
           }))
         }
         onResetToDefault={handleResetToDefault}
+        onOpenTemplateModal={() => setIsTemplateModalOpen(true)}
+      />
+
+      <SpreadsheetTemplateModal
+        isOpen={isTemplateModalOpen}
+        onClose={() => setIsTemplateModalOpen(false)}
       />
 
       <BatchCalculatorModal

@@ -233,7 +233,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block font-bold text-slate-700 uppercase mb-1">Labour Cost</label>
+                  <label className="block font-bold text-slate-700 uppercase mb-1">Labour Cost per Unit (Rp/{unitProduk})</label>
                   <input
                     type="number"
                     step="0.1"
@@ -243,7 +243,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 uppercase mb-1">Overhead</label>
+                  <label className="block font-bold text-slate-700 uppercase mb-1">Overhead per Unit (Rp/{unitProduk})</label>
                   <input
                     type="number"
                     step="0.1"

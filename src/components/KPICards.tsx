@@ -1,16 +1,15 @@
 import React from 'react';
 import { FinishedGoodSummary } from '../types/bom';
 import { formatIDR, formatNumber } from '../utils/bomCalculations';
-import { DollarSign, Package, Layers, TrendingUp, Sparkles, Scale } from 'lucide-react';
+import { Package, Layers, TrendingUp, Scale } from 'lucide-react';
 
 interface KPICardsProps {
-  totalBatchCost: number;
+  totalBatchCost?: number;
   fgSummaries: FinishedGoodSummary[];
   uniqueRawMaterialsCount: number;
 }
 
 export const KPICards: React.FC<KPICardsProps> = ({
-  totalBatchCost,
   fgSummaries,
   uniqueRawMaterialsCount,
 }) => {
@@ -20,26 +19,7 @@ export const KPICards: React.FC<KPICardsProps> = ({
   const lowestHPP = sortedByHPP[sortedByHPP.length - 1];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {/* Total Batch Cost */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs hover:border-emerald-300 transition-colors">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-            Total HPP Batch BOM
-          </span>
-          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <DollarSign className="w-4 h-4" />
-          </div>
-        </div>
-        <div className="mt-2">
-          <div className="text-2xl font-bold text-slate-900">{formatIDR(totalBatchCost)}</div>
-          <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-emerald-500" />
-            Akumulasi 5 resep batch produksi
-          </p>
-        </div>
-      </div>
-
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
       {/* Finished Goods Count */}
       <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs hover:border-indigo-300 transition-colors">
         <div className="flex items-center justify-between">

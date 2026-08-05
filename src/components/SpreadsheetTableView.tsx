@@ -312,8 +312,8 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
               <th className="py-3 px-3 border-r border-slate-200 text-right">Total Harga Raw Material</th>
               <th className="py-3 px-3 border-r border-slate-200 text-right">Total Harga FG</th>
               <th className="py-3 px-3 border-r border-slate-200 text-right text-amber-900 font-extrabold bg-amber-50/50">Harga BB</th>
-              <th className="py-3 px-3 border-r border-slate-200 text-right">Labour Cost</th>
-              <th className="py-3 px-3 border-r border-slate-200 text-right">Overhead</th>
+              <th className="py-3 px-3 border-r border-slate-200 text-right font-bold text-slate-800">Labour Cost per Unit (Rp)</th>
+              <th className="py-3 px-3 border-r border-slate-200 text-right font-bold text-slate-800">Overhead Cost per Unit (Rp)</th>
               <th className="py-3 px-3 border-r border-slate-200 text-right text-rose-700 font-extrabold bg-rose-50/50">TOTAL HPP</th>
               <th className="py-3 px-3 border-r border-slate-200 text-center">Margin SCM</th>
               <th className="py-3 px-3 border-r border-slate-200 text-right text-rose-700 font-extrabold bg-rose-50/50">H Jual SCM</th>
@@ -530,20 +530,26 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
                     <td className="py-2.5 px-3 border-r border-slate-200 text-right font-mono">
                       {isFG ? (
                         isEditing ? (
-                          <input
-                            type="number"
-                            step="0.1"
-                            value={editRowData.labour_cost ?? ''}
-                            onChange={(e) =>
-                              setEditRowData({
-                                ...editRowData,
-                                labour_cost: Number(e.target.value),
-                              })
-                            }
-                            className="w-16 px-1.5 py-0.5 border border-emerald-500 rounded text-xs bg-white text-slate-900 text-right"
-                          />
+                          <div className="flex items-center justify-end gap-1">
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={editRowData.labour_cost ?? ''}
+                              onChange={(e) =>
+                                setEditRowData({
+                                  ...editRowData,
+                                  labour_cost: Number(e.target.value),
+                                })
+                              }
+                              className="w-16 px-1.5 py-0.5 border border-emerald-500 rounded text-xs bg-white text-slate-900 text-right"
+                            />
+                            <span className="text-[10px] text-slate-500 font-sans">/{row.unit_produk || 'unit'}</span>
+                          </div>
                         ) : row.labour_cost !== null && row.labour_cost !== undefined ? (
-                          formatNumber(row.labour_cost)
+                          <span className="font-semibold text-slate-800">
+                            {formatNumber(row.labour_cost)}{' '}
+                            <span className="text-[10px] font-normal text-slate-500">/{row.unit_produk || 'unit'}</span>
+                          </span>
                         ) : (
                           ''
                         )
@@ -556,20 +562,26 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
                     <td className="py-2.5 px-3 border-r border-slate-200 text-right font-mono">
                       {isFG ? (
                         isEditing ? (
-                          <input
-                            type="number"
-                            step="0.1"
-                            value={editRowData.overhead ?? ''}
-                            onChange={(e) =>
-                              setEditRowData({
-                                ...editRowData,
-                                overhead: Number(e.target.value),
-                              })
-                            }
-                            className="w-16 px-1.5 py-0.5 border border-emerald-500 rounded text-xs bg-white text-slate-900 text-right"
-                          />
+                          <div className="flex items-center justify-end gap-1">
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={editRowData.overhead ?? ''}
+                              onChange={(e) =>
+                                setEditRowData({
+                                  ...editRowData,
+                                  overhead: Number(e.target.value),
+                                })
+                              }
+                              className="w-16 px-1.5 py-0.5 border border-emerald-500 rounded text-xs bg-white text-slate-900 text-right"
+                            />
+                            <span className="text-[10px] text-slate-500 font-sans">/{row.unit_produk || 'unit'}</span>
+                          </div>
                         ) : row.overhead !== null && row.overhead !== undefined ? (
-                          formatNumber(row.overhead)
+                          <span className="font-semibold text-slate-800">
+                            {formatNumber(row.overhead)}{' '}
+                            <span className="text-[10px] font-normal text-slate-500">/{row.unit_produk || 'unit'}</span>
+                          </span>
                         ) : (
                           ''
                         )

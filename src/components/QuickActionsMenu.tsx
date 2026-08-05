@@ -23,6 +23,7 @@ interface QuickActionsMenuProps {
   onOpenSimulateModal: () => void;
   onOpenAddModal: () => void;
   onExportCSV: () => void;
+  onOpenTemplateModal?: () => void;
 }
 
 export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
@@ -33,6 +34,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   onOpenSimulateModal,
   onOpenAddModal,
   onExportCSV,
+  onOpenTemplateModal,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -103,6 +105,8 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                     <div className="text-[10px] text-slate-500">Hubungkan Web App live sync</div>
                   </div>
                 </button>
+
+
 
                 <button
                   onClick={() => {

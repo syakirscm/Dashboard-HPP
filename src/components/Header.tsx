@@ -21,6 +21,7 @@ interface HeaderProps {
   onOpenSimulateModal: () => void;
   onOpenAddModal: () => void;
   onExportCSV: () => void;
+  onOpenTemplateModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -31,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSimulateModal,
   onOpenAddModal,
   onExportCSV,
+  onOpenTemplateModal,
 }) => {
   const getStatusBadge = () => {
     switch (syncStatus.status) {
@@ -107,6 +109,7 @@ export const Header: React.FC<HeaderProps> = ({
               onOpenSimulateModal={onOpenSimulateModal}
               onOpenAddModal={onOpenAddModal}
               onExportCSV={onExportCSV}
+              onOpenTemplateModal={onOpenTemplateModal}
             />
 
             <div className="h-6 w-px bg-slate-200 mx-0.5 hidden sm:block" />

@@ -477,52 +477,89 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
 ];
 
 export const GOOGLE_APPS_SCRIPT_SAMPLE_CODE = `/**
- * Google Apps Script - BOM Live Synchronizer
+ * Google Apps Script - Live Synchronizer BOM & Crewing Guide
+ * 
+ * Multi-Sheet Setup:
+ * 1. Sheet "NEW FORMULA & HPP": Raw Materials & Finish Goods BOM data
+ * 2. Sheet "Source Crewing Guide": Direct Labour Cost & Overhead Cost per Category/Product
  * 
  * Instructions:
- * 1. Open your Google Spreadsheet containing the BOM table.
+ * 1. Open Google Spreadsheet.
  * 2. Go to Extensions > Apps Script.
- * 3. Delete existing content and paste this entire code block.
+ * 3. Delete existing code and paste this entire script.
  * 4. Click 'Deploy' > 'New deployment'.
  * 5. Select type: 'Web app'.
- * 6. Set Description: "BOM Web API".
- * 7. Set 'Execute as': "Me".
- * 8. Set 'Who has access': "Anyone" (crucial for live sync).
- * 9. Copy the Web App URL and paste it into the BOM Dashboard settings!
+ * 6. Set Description: "BOM & Crewing Guide API".
+ * 7. Set 'Who has access': "Anyone" (Siapa saja).
+ * 8. Copy the Web App URL and paste it into Dashboard Settings!
  */
 
 function doGet(e) {
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var data = sheet.getDataRange().getValues();
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // 1. Fetch "NEW FORMULA & HPP" (or fallback to active sheet)
+    var bomSheet = ss.getSheetByName("NEW FORMULA & HPP") || ss.getActiveSheet();
+    var data = bomSheet.getDataRange().getValues();
     
     if (data.length <= 1) {
-      return responseJSON({ status: 'error', message: 'Sheet is empty or missing headers' });
+      return responseJSON({ status: 'error', message: 'Sheet "NEW FORMULA & HPP" kosong atau tidak ada data.' });
     }
 
+    // 2. Fetch "Source Crewing Guide" (or "Crewing Guide") for Labour & Overhead costs
+    var crewingSheet = ss.getSheetByName("Source Crewing Guide") || ss.getSheetByName("Crewing Guide");
+    var crewingMap = {};
+    
+    if (crewingSheet) {
+      var cData = crewingSheet.getDataRange().getValues();
+      if (cData.length > 1) {
+        var cHeaders = cData[0].map(function(h) { return String(h).trim().toLowerCase(); });
+        var cCatIdx = cHeaders.findIndex(function(h) { return h.includes('kategori') || h.includes('category'); });
+        var cKodeIdx = cHeaders.findIndex(function(h) { return h.includes('kode') || h.includes('code'); });
+        var cNamaIdx = cHeaders.findIndex(function(h) { return h.includes('nama') || h.includes('produk'); });
+        var cLabourIdx = cHeaders.findIndex(function(h) { return h.includes('labour cost per unit') || h.includes('labour cost') || h.includes('labour') || h.includes('tenaga') || h.includes('upah'); });
+        var cOverheadIdx = cHeaders.findIndex(function(h) { return h.includes('overhead cost per unit') || h.includes('overhead cost') || h.includes('overhead') || h.includes('biaya overhead'); });
+        
+        for (var c = 1; c < cData.length; c++) {
+          var cRow = cData[c];
+          var catKey = cCatIdx !== -1 ? String(cRow[cCatIdx] || '').trim().toLowerCase() : '';
+          var kodeKey = cKodeIdx !== -1 ? String(cRow[cKodeIdx] || '').trim().toLowerCase() : '';
+          var namaKey = cNamaIdx !== -1 ? String(cRow[cNamaIdx] || '').trim().toLowerCase() : '';
+          
+          var labourVal = cLabourIdx !== -1 ? (Number(cRow[cLabourIdx]) || 0) : 0;
+          var overheadVal = cOverheadIdx !== -1 ? (Number(cRow[cOverheadIdx]) || 0) : 0;
+          
+          var entry = { labour: labourVal, overhead: overheadVal };
+          if (catKey) crewingMap[catKey] = entry;
+          if (kodeKey) crewingMap[kodeKey] = entry;
+          if (namaKey) crewingMap[namaKey] = entry;
+        }
+      }
+    }
+
+    // 3. Process BOM Data Headers
     var headers = data[0].map(function(h) {
       return String(h).trim().toLowerCase();
     });
     
-    // Map column positions dynamically
     var colMap = {
-      kategori: headers.findIndex(h => h.includes('kategori')),
-      kode: headers.findIndex(h => h.includes('kode')),
-      nama_produk: headers.findIndex(h => h.includes('nama') || h.includes('produk')),
-      unit_produk: headers.findIndex(h => h.includes('unit')),
-      tipe_produk: headers.findIndex(h => h.includes('tipe')),
-      minus: headers.findIndex(h => h.includes('minus')),
-      finish_goods: headers.findIndex(h => h.includes('finish') || h.includes('fg')),
-      bb_pemakaian_qt: headers.findIndex(h => h.includes('pemakaian') || h.includes('bb')),
-      harga_raw_material: headers.findIndex(h => h.includes('harga raw')),
-      total_harga_raw_material: headers.findIndex(h => h.includes('total harga raw')),
-      total_harga_fg: headers.findIndex(h => h.includes('total harga fg')),
-      harga_bb: headers.findIndex(h => h.includes('harga bb')),
-      labour_cost: headers.findIndex(h => h.includes('labour')),
-      overhead: headers.findIndex(h => h.includes('overhead')),
-      total_hpp: headers.findIndex(h => h.includes('total hpp')),
-      margin_scm: headers.findIndex(h => h.includes('margin')),
-      h_jual_scm: headers.findIndex(h => h.includes('jual'))
+      kategori: headers.findIndex(function(h) { return h.includes('kategori'); }),
+      kode: headers.findIndex(function(h) { return h.includes('kode'); }),
+      nama_produk: headers.findIndex(function(h) { return h.includes('nama') || h.includes('produk'); }),
+      unit_produk: headers.findIndex(function(h) { return h.includes('unit'); }),
+      tipe_produk: headers.findIndex(function(h) { return h.includes('tipe'); }),
+      minus: headers.findIndex(function(h) { return h.includes('minus'); }),
+      finish_goods: headers.findIndex(function(h) { return h.includes('finish') || h.includes('fg') || h.includes('yield'); }),
+      bb_pemakaian_qt: headers.findIndex(function(h) { return h.includes('pemakaian') || h.includes('bb'); }),
+      harga_raw_material: headers.findIndex(function(h) { return h.includes('harga raw'); }),
+      total_harga_raw_material: headers.findIndex(function(h) { return h.includes('total harga raw'); }),
+      total_harga_fg: headers.findIndex(function(h) { return h.includes('total harga fg'); }),
+      harga_bb: headers.findIndex(function(h) { return h.includes('harga bb'); }),
+      labour_cost: headers.findIndex(function(h) { return h.includes('labour'); }),
+      overhead: headers.findIndex(function(h) { return h.includes('overhead'); }),
+      total_hpp: headers.findIndex(function(h) { return h.includes('total hpp'); }),
+      margin_scm: headers.findIndex(function(h) { return h.includes('margin'); }),
+      h_jual_scm: headers.findIndex(function(h) { return h.includes('jual'); })
     };
 
     var rows = [];
@@ -532,12 +569,31 @@ function doGet(e) {
 
       var tipe = String(row[colMap.tipe_produk] || '').toLowerCase().trim();
       var isFG = tipe.includes('finish') || tipe === 'fg';
+      
+      var kategoriStr = String(row[colMap.kategori] || '').trim();
+      var kodeStr = String(row[colMap.kode] || '').trim();
+      var namaStr = String(row[colMap.nama_produk] || '').trim();
+      
+      // Match Labour and Overhead from "Source Crewing Guide" map
+      var crewingInfo = crewingMap[kategoriStr.toLowerCase()] || 
+                        crewingMap[kodeStr.toLowerCase()] || 
+                        crewingMap[namaStr.toLowerCase()] || null;
+                        
+      var labourVal = isFG ? (
+        crewingInfo ? crewingInfo.labour : 
+        (colMap.labour_cost !== -1 ? (Number(row[colMap.labour_cost]) || 0) : 0)
+      ) : null;
+      
+      var overheadVal = isFG ? (
+        crewingInfo ? crewingInfo.overhead : 
+        (colMap.overhead !== -1 ? (Number(row[colMap.overhead]) || 0) : 0)
+      ) : null;
 
       var item = {
         id: 'row-' + i,
-        kategori: String(row[colMap.kategori] || ''),
-        kode: String(row[colMap.kode] || ''),
-        nama_produk: String(row[colMap.nama_produk] || ''),
+        kategori: kategoriStr,
+        kode: kodeStr,
+        nama_produk: namaStr,
         unit_produk: String(row[colMap.unit_produk] || ''),
         tipe_produk: isFG ? 'finish_goods' : 'raw_materials',
         minus: Number(row[colMap.minus]) || 0,
@@ -547,8 +603,8 @@ function doGet(e) {
         total_harga_raw_material: !isFG ? (Number(row[colMap.total_harga_raw_material]) || 0) : null,
         total_harga_fg: isFG ? (Number(row[colMap.total_harga_fg]) || 0) : null,
         harga_bb: isFG && colMap.harga_bb !== -1 ? (Number(row[colMap.harga_bb]) || null) : null,
-        labour_cost: isFG && colMap.labour_cost !== -1 ? (Number(row[colMap.labour_cost]) || null) : null,
-        overhead: isFG && colMap.overhead !== -1 ? (Number(row[colMap.overhead]) || null) : null,
+        labour_cost: labourVal,
+        overhead: overheadVal,
         total_hpp: isFG && colMap.total_hpp !== -1 ? (Number(row[colMap.total_hpp]) || null) : null,
         margin_scm: isFG && colMap.margin_scm !== -1 ? (Number(row[colMap.margin_scm]) || null) : null,
         h_jual_scm: isFG && colMap.h_jual_scm !== -1 ? (Number(row[colMap.h_jual_scm]) || null) : null
@@ -560,6 +616,8 @@ function doGet(e) {
     return responseJSON({
       status: 'success',
       count: rows.length,
+      sourceSheet: bomSheet.getName(),
+      crewingIntegrated: !!crewingSheet,
       timestamp: new Date().toISOString(),
       data: rows
     });

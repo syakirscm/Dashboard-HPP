@@ -15,6 +15,8 @@ import {
   Share2,
   CheckCircle2,
   HelpCircle,
+  FileSpreadsheet,
+  Users,
 } from 'lucide-react';
 
 interface SyncSettingsModalProps {
@@ -26,6 +28,7 @@ interface SyncSettingsModalProps {
   onTriggerSync: () => Promise<void>;
   onToggleAutoSync: (enabled: boolean, interval: number) => void;
   onResetToDefault: () => void;
+  onOpenTemplateModal?: () => void;
 }
 
 export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
@@ -37,6 +40,7 @@ export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
   onTriggerSync,
   onToggleAutoSync,
   onResetToDefault,
+  onOpenTemplateModal,
 }) => {
   const [inputUrl, setInputUrl] = useState(gasUrl);
   const [copied, setCopied] = useState(false);
@@ -196,6 +200,34 @@ export const SyncSettingsModal: React.FC<SyncSettingsModalProps> = ({
                   )}
                 </div>
               </div>
+
+              {/* Banner Template Spreadsheet & Crewing Guide */}
+              {onOpenTemplateModal && (
+                <div className="p-4 bg-gradient-to-r from-emerald-900 to-teal-950 text-white rounded-2xl shadow-md border border-emerald-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0">
+                      <FileSpreadsheet className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <span>Template Spreadsheet & Crewing Guide</span>
+                        <span className="bg-amber-400 text-slate-950 text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase">
+                          CSV / Sheet
+                        </span>
+                      </h4>
+                      <p className="text-[11px] text-emerald-200/90 mt-0.5">
+                        Unduh atau lihat format sheet "NEW FORMULA & HPP" dan "Source Crewing Guide"
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={onOpenTemplateModal}
+                    className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 rounded-xl transition-all shadow-xs cursor-pointer shrink-0"
+                  >
+                    <span>Lihat & Unduh Template</span>
+                  </button>
+                </div>
+              )}
 
               {/* URL Input Form */}
               <div className="space-y-3">
