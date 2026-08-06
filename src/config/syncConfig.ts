@@ -6,5 +6,6 @@
 
 export const DEFAULT_GAS_URL =
   (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GAS_URL) ||
+  
   'https://script.google.com/macros/s/AKfycbw7L8BPQhEIxr6faxHSoQNtXVU2QU3xeP0yzVSDdPApP5l9GDCYpvXjUxL-7jSdwiAm/exec';
 
