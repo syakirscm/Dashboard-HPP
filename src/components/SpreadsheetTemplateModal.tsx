@@ -35,14 +35,14 @@ Adon Fla,P1001,Tepung Fla,ktk,raw_materials,-1,,4934,,,
 Adon Fla,BB024,Telur Ayam,butir,raw_materials,-30,,1614,,,
 Adon Fla,BB018,Gula Pasir,gram,raw_materials,-800,,18,,,
 Adon Fla,P1003,Mentega Fla,ktk,raw_materials,-1,,7200,,,
-Adon Fla,P2002,Adon Fla,gram,finish_goods,0,4500,,1.5,0.5,0.38
+Adon Fla,P2002,Adon Fla,gram,finish_goods,0,4500,,0,0.2,0.38
 Adon Fla Cream Cheese,BB170,Cream Cheese Anchor,gram,raw_materials,-250,,162,,,
 Adon Fla Cream Cheese,BB171,Whip Cream Brookfarm,gram,raw_materials,-100,,48.4,,,
-Adon Fla Cream Cheese,P2003,Adon Fla Cream Cheese,gram,finish_goods,0,352,,2.0,1.0,0.38`;
+Adon Fla Cream Cheese,P2003,Adon Fla Cream Cheese,gram,finish_goods,0,352,,0,1.0,0.38`;
 
   // Sample CSV Data for Source Crewing Guide
   const crewingCsvContent = `Kategori,Kode Produk,Nama Produk,Labour Cost per Unit (Rp),Overhead Cost per Unit (Rp),Crew Ratio,Shift Duration (Jam),Catatan
-Adon Fla,P2002,Adon Fla,1.5,0.5,2 Crew,8 Jam,Gaji Rp 150.000 / shift 4500g
+Adon Fla,P2002,Adon Fla,0.6,0.2,2 Crew,8 Jam,Gaji Rp 150.000 / shift 4500g (Rp 0,6/gram)
 Adon Fla Cream Cheese,P2003,Adon Fla Cream Cheese,2.0,1.0,2 Crew,8 Jam,Gaji Rp 150.000 / shift 352g
 Adonan Kulit Pie,P2001,Adonan Kulit Pie,1.0,0.5,1 Crew,8 Jam,Standard pie crust crewing
 Pia Fla Coklat,P3001,Pia Fla Coklat,150,50,3 Crew,8 Jam,Packing & Baking crew`;
@@ -311,11 +311,11 @@ Pia Fla Coklat,P3001,Pia Fla Coklat,150,50,3 Crew,8 Jam,Packing & Baking crew`;
 
                   <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200/80 space-y-1">
                     <div className="font-bold text-amber-950 font-mono text-[11px] flex items-center gap-1">
-                      <span>Labour Cost (Rp/Unit)</span>
-                      <span className="text-[10px] bg-amber-200 text-amber-900 px-1 rounded">Ditarik ke HPP</span>
+                      <span>Labour Cost (Kolom K)</span>
+                      <span className="text-[10px] bg-amber-200 text-amber-900 px-1 rounded font-bold">Ditarik dari Kolom K</span>
                     </div>
                     <p className="text-slate-700 text-[11px]">
-                      Biaya tenaga kerja langsung per unit produk (misal: Rp 1,5 / gram atau Rp 150 / pcs).
+                      Biaya tenaga kerja langsung per gram/unit produk (misal: Rp 0,6 / gram) yang berada di <strong>Kolom K</strong> pada sheet Source Crewing Guide.
                     </p>
                   </div>
 

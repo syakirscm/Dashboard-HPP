@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BOMRow } from '../types/bom';
-import { formatIDR, formatNumber } from '../utils/bomCalculations';
+import { formatIDR, formatNumber, calculateLabourCostForFG } from '../utils/bomCalculations';
+import { MultiSelectDropdown, MultiSelectOption } from './MultiSelectDropdown';
 import {
   Search,
   Filter,
@@ -26,7 +27,7 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
   onOpenAddModal,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [filterKode, setFilterKode] = useState<string>('');
   const [filterNama, setFilterNama] = useState<string>('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
@@ -37,7 +38,22 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editRowData, setEditRowData] = useState<Partial<BOMRow>>({});
 
-  const categories = Array.from(new Set(rows.map((r) => r.kategori).filter(Boolean))).sort();
+  const categoryOptions = useMemo<MultiSelectOption[]>(() => {
+    const counts: { [cat: string]: number } = {};
+    rows.forEach((r) => {
+      if (r.kategori) {
+        counts[r.kategori] = (counts[r.kategori] || 0) + 1;
+      }
+    });
+    return Object.keys(counts)
+      .sort()
+      .map((cat) => ({
+        value: cat,
+        label: cat,
+        count: counts[cat],
+      }));
+  }, [rows]);
+
   const uniqueCodes = Array.from(new Set(rows.map((r) => r.kode).filter(Boolean))).sort();
   const uniqueProductNames = Array.from(new Set(rows.map((r) => r.nama_produk).filter(Boolean))).sort();
 
@@ -51,14 +67,14 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
   };
 
   const isFilterActive =
-    selectedCategory !== 'ALL' ||
+    selectedCategories.length > 0 ||
     filterKode !== '' ||
     filterNama !== '' ||
     selectedType !== 'ALL' ||
     searchTerm !== '';
 
   const handleResetFilters = () => {
-    setSelectedCategory('ALL');
+    setSelectedCategories([]);
     setFilterKode('');
     setFilterNama('');
     setSelectedType('ALL');
@@ -67,7 +83,7 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
 
   const filteredRows = rows.filter((r) => {
     const matchesCat =
-      selectedCategory === 'ALL' || r.kategori === selectedCategory;
+      selectedCategories.length === 0 || selectedCategories.includes(r.kategori);
 
     const matchesKode =
       !filterKode || r.kode.toLowerCase().includes(filterKode.toLowerCase());
@@ -117,19 +133,13 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
         editRowData.total_harga_raw_material = Math.round(usage * price);
       } else if (editRowData.tipe_produk === 'finish_goods') {
         const yieldQty = editRowData.finish_goods || 1;
-        const hargaBB = editRowData.harga_bb ?? (editRowData.total_harga_fg ? editRowData.total_harga_fg / yieldQty : 0);
-        const labour = editRowData.labour_cost ?? 0;
-        const overhead = editRowData.overhead ?? 0;
-        const totalHPP = Math.round((hargaBB + labour + overhead) * 10) / 10;
-        const margin = editRowData.margin_scm ?? 0.38;
-        const hJual = editRowData.h_jual_scm ?? (margin > 0 && margin < 1 ? Math.round(totalHPP / (1 - margin)) : Math.round(totalHPP * 1.38));
-
-        editRowData.harga_bb = Math.round(hargaBB * 10) / 10;
+        const originalRow = rows.find((r) => r.id === editingRowId);
+        // If user manually changed labour_cost, derive new tarif_upah_per_output
+        if (typeof editRowData.labour_cost === 'number' && editRowData.labour_cost > 0 && originalRow && editRowData.labour_cost !== originalRow.labour_cost) {
+          editRowData.tarif_upah_per_output = Math.round(editRowData.labour_cost * yieldQty);
+        }
+        const labour = calculateLabourCostForFG(editRowData as BOMRow, yieldQty);
         editRowData.labour_cost = labour;
-        editRowData.overhead = overhead;
-        editRowData.total_hpp = totalHPP;
-        editRowData.margin_scm = margin;
-        editRowData.h_jual_scm = hJual;
       }
       onUpdateRow(editingRowId, editRowData);
       setEditingRowId(null);
@@ -174,24 +184,14 @@ export const SpreadsheetTableView: React.FC<SpreadsheetTableViewProps> = ({
 
         {/* 3 Main Filter Controls: Kategori | Kode Baru | nama produk */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
-          {/* 1. Filter Kategori */}
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-              Kategori
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800 font-medium"
-            >
-              <option value="ALL">Semua Kategori ({categories.length})</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* 1. Filter Kategori (Multi-select) */}
+          <MultiSelectDropdown
+            label="Kategori"
+            options={categoryOptions}
+            selectedValues={selectedCategories}
+            onChange={setSelectedCategories}
+            placeholder="Semua Kategori"
+          />
 
           {/* 2. Filter Kode Baru */}
           <div>

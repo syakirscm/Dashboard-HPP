@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FinishedGoodSummary, BOMRow } from '../types/bom';
 import { formatIDR, formatNumber } from '../utils/bomCalculations';
+import { MultiSelectDropdown, MultiSelectOption } from './MultiSelectDropdown';
 import {
   ChevronDown,
   ChevronRight,
@@ -38,26 +39,41 @@ export const HierarchicalView: React.FC<HierarchicalViewProps> = ({
   const [editQty, setEditQty] = useState<number>(0);
 
   // Filter States for Kategori, Kode Baru, and nama produk
-  const [filterKategori, setFilterKategori] = useState<string>('ALL');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [filterKode, setFilterKode] = useState<string>('');
   const [filterNama, setFilterNama] = useState<string>('');
 
-  const categories = Array.from(new Set(allRows.map((r) => r.kategori).filter(Boolean))).sort();
+  const categoryOptions = useMemo<MultiSelectOption[]>(() => {
+    const counts: { [cat: string]: number } = {};
+    allRows.forEach((r) => {
+      if (r.kategori) {
+        counts[r.kategori] = (counts[r.kategori] || 0) + 1;
+      }
+    });
+    return Object.keys(counts)
+      .sort()
+      .map((cat) => ({
+        value: cat,
+        label: cat,
+        count: counts[cat],
+      }));
+  }, [allRows]);
+
   const uniqueCodes = Array.from(new Set(allRows.map((r) => r.kode).filter(Boolean))).sort();
   const uniqueProductNames = Array.from(new Set(allRows.map((r) => r.nama_produk).filter(Boolean))).sort();
 
   const isFilterActive =
-    filterKategori !== 'ALL' || filterKode !== '' || filterNama !== '';
+    selectedCategories.length > 0 || filterKode !== '' || filterNama !== '';
 
   const handleResetFilters = () => {
-    setFilterKategori('ALL');
+    setSelectedCategories([]);
     setFilterKode('');
     setFilterNama('');
   };
 
   const filteredFgSummaries = fgSummaries.filter((fg) => {
     const matchesCat =
-      filterKategori === 'ALL' || fg.kategori === filterKategori;
+      selectedCategories.length === 0 || selectedCategories.includes(fg.kategori);
 
     const matchesKode =
       !filterKode ||
@@ -162,24 +178,14 @@ export const HierarchicalView: React.FC<HierarchicalViewProps> = ({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* 1. Filter Kategori */}
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-              Kategori
-            </label>
-            <select
-              value={filterKategori}
-              onChange={(e) => setFilterKategori(e.target.value)}
-              className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800 font-medium"
-            >
-              <option value="ALL">Semua Kategori ({categories.length})</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* 1. Filter Kategori (Multi-select) */}
+          <MultiSelectDropdown
+            label="Kategori"
+            options={categoryOptions}
+            selectedValues={selectedCategories}
+            onChange={setSelectedCategories}
+            placeholder="Semua Kategori"
+          />
 
           {/* 2. Filter Kode Baru */}
           <div>

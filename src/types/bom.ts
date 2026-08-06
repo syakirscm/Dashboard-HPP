@@ -15,6 +15,7 @@ export interface BOMRow {
   total_harga_fg: number | null; // sum of total raw material costs for FG row
   harga_bb?: number | null; // Raw Material cost per unit FG (Harga BB)
   labour_cost?: number | null; // Labour Cost per unit
+  tarif_upah_per_output?: number | null; // Total Tarif Upah for output batch
   overhead?: number | null; // Overhead cost per unit
   total_hpp?: number | null; // TOTAL HPP per unit = harga_bb + labour_cost + overhead
   margin_scm?: number | null; // Margin SCM percentage (e.g. 0.38 for 38%)

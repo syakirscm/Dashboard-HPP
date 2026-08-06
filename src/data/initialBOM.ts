@@ -85,12 +85,12 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     harga_raw_material: null,
     total_harga_raw_material: null,
     total_harga_fg: 126737,
-    harga_bb: 28,
-    labour_cost: 1.5,
+    harga_bb: 28.2,
+    labour_cost: 0.6,
     overhead: 0.5,
-    total_hpp: 30,
+    total_hpp: 29.3,
     margin_scm: 0.38,
-    h_jual_scm: 48,
+    h_jual_scm: 47,
   },
 
   // Category 2: Adon Fla Cream Cheese
@@ -163,12 +163,12 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     harga_raw_material: null,
     total_harga_raw_material: null,
     total_harga_fg: 49256,
-    harga_bb: 124,
-    labour_cost: 6.5,
-    overhead: 3.0,
-    total_hpp: 134,
+    harga_bb: 123.1,
+    labour_cost: 4.3,
+    overhead: 2.2,
+    total_hpp: 129.6,
     margin_scm: 0.38,
-    h_jual_scm: 215,
+    h_jual_scm: 209,
   },
 
   // Category 3: Adon Klappy
@@ -284,11 +284,11 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     total_harga_raw_material: null,
     total_harga_fg: 201734,
     harga_bb: 42,
-    labour_cost: 0,
-    overhead: 0,
-    total_hpp: 42,
+    labour_cost: 0.5,
+    overhead: 0.8,
+    total_hpp: 43.3,
     margin_scm: 0.38,
-    h_jual_scm: 68,
+    h_jual_scm: 70,
   },
 
   // Category 4: Adonan Bola Ubi
@@ -361,12 +361,12 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     harga_raw_material: null,
     total_harga_raw_material: null,
     total_harga_fg: 201540,
-    harga_bb: 22,
-    labour_cost: 0,
-    overhead: 0,
-    total_hpp: 22,
+    harga_bb: 22.4,
+    labour_cost: 11.7,
+    overhead: 0.4,
+    total_hpp: 34.5,
     margin_scm: 0.38,
-    h_jual_scm: 35,
+    h_jual_scm: 56,
   },
 
   // Category 5: Adonan Kulit Pie
@@ -467,12 +467,12 @@ export const INITIAL_BOM_DATA: BOMRow[] = [
     harga_raw_material: null,
     total_harga_raw_material: null,
     total_harga_fg: 37606,
-    harga_bb: 17.3,
-    labour_cost: 0,
-    overhead: 0,
-    total_hpp: 17,
+    harga_bb: 17.2,
+    labour_cost: 0.5,
+    overhead: 0.3,
+    total_hpp: 18.0,
     margin_scm: 0.38,
-    h_jual_scm: 27,
+    h_jual_scm: 29,
   },
 ];
 
@@ -514,20 +514,64 @@ function doGet(e) {
       var cData = crewingSheet.getDataRange().getValues();
       if (cData.length > 1) {
         var cHeaders = cData[0].map(function(h) { return String(h).trim().toLowerCase(); });
-        var cCatIdx = cHeaders.findIndex(function(h) { return h.includes('kategori') || h.includes('category'); });
-        var cKodeIdx = cHeaders.findIndex(function(h) { return h.includes('kode') || h.includes('code'); });
-        var cNamaIdx = cHeaders.findIndex(function(h) { return h.includes('nama') || h.includes('produk'); });
-        var cLabourIdx = cHeaders.findIndex(function(h) { return h.includes('labour cost per unit') || h.includes('labour cost') || h.includes('labour') || h.includes('tenaga') || h.includes('upah'); });
-        var cOverheadIdx = cHeaders.findIndex(function(h) { return h.includes('overhead cost per unit') || h.includes('overhead cost') || h.includes('overhead') || h.includes('biaya overhead'); });
+        var cCatIdx = cHeaders.findIndex(function(h) { return h.includes('kategori') || h.includes('category') || h.includes('cat'); });
+        if (cCatIdx === -1) cCatIdx = 0;
         
+        var cKodeIdx = cHeaders.findIndex(function(h) { return h.includes('kode') || h.includes('code') || h.includes('sku'); });
+        if (cKodeIdx === -1) cKodeIdx = 1;
+        
+        var cNamaIdx = cHeaders.findIndex(function(h) { return h.includes('nama') || h.includes('produk') || h.includes('item'); });
+        if (cNamaIdx === -1) cNamaIdx = 2;
+        
+        // Penarikan nilai Labour: Rumus Tarif Upah Per Output (Kolom H / Index 7) dibagi Yield Output (Unit) (Kolom I / Index 8)
+        var cTarifPerOutputIdx = cHeaders.findIndex(function(h) { return h.includes('tarif upah per output') || h.includes('upah per output'); });
+        if (cTarifPerOutputIdx === -1) cTarifPerOutputIdx = 7; // Col H = index 7
+
+        var cYieldIdx = cHeaders.findIndex(function(h) { return h.includes('yield output') || h.includes('yield'); });
+        if (cYieldIdx === -1) cYieldIdx = 8; // Col I = index 8
+
+        var cLabourIdx = cHeaders.findIndex(function(h) {
+          return h.includes('per satuan') || h.includes('per unit') || h.includes('labour cost per');
+        });
+        if (cLabourIdx === -1) cLabourIdx = 10; // Col K = index 10
+
+        var cOverheadIdx = cHeaders.findIndex(function(h) { return h.includes('overhead'); });
+        if (cOverheadIdx === -1) cOverheadIdx = 4;
+        
+        // helper parse float mendukung format "0,6", "Rp 0,6", "0.6", dll.
+        function parseNum(val) {
+          if (val === null || val === undefined || val === '') return 0;
+          if (typeof val === 'number') return val;
+          var str = String(val).replace(/[^0-9,.-]/g, '').replace(',', '.');
+          var n = parseFloat(str);
+          return isNaN(n) ? 0 : n;
+        }
+
         for (var c = 1; c < cData.length; c++) {
           var cRow = cData[c];
-          var catKey = cCatIdx !== -1 ? String(cRow[cCatIdx] || '').trim().toLowerCase() : '';
-          var kodeKey = cKodeIdx !== -1 ? String(cRow[cKodeIdx] || '').trim().toLowerCase() : '';
-          var namaKey = cNamaIdx !== -1 ? String(cRow[cNamaIdx] || '').trim().toLowerCase() : '';
+          if (!cRow || cRow.length === 0) continue;
+
+          var catKey = cCatIdx < cRow.length ? String(cRow[cCatIdx] || '').trim().toLowerCase() : '';
+          var kodeKey = cKodeIdx < cRow.length ? String(cRow[cKodeIdx] || '').trim().toLowerCase() : '';
+          var namaKey = cNamaIdx < cRow.length ? String(cRow[cNamaIdx] || '').trim().toLowerCase() : '';
           
-          var labourVal = cLabourIdx !== -1 ? (Number(cRow[cLabourIdx]) || 0) : 0;
-          var overheadVal = cOverheadIdx !== -1 ? (Number(cRow[cOverheadIdx]) || 0) : 0;
+          // Abaikan jika tidak ada nama/kode/kategori
+          if (!catKey && !kodeKey && !namaKey) continue;
+
+          // Rumus Labour: Tarif Upah Per Output / Yield Output (Unit)
+          var tarifPerOutput = (cTarifPerOutputIdx < cRow.length) ? parseNum(cRow[cTarifPerOutputIdx]) : 0;
+          var yieldOutput = (cYieldIdx < cRow.length) ? parseNum(cRow[cYieldIdx]) : 0;
+
+          var labourVal = 0;
+          if (yieldOutput > 0 && tarifPerOutput > 0) {
+            labourVal = Math.round((tarifPerOutput / yieldOutput) * 10) / 10;
+          } else if (cLabourIdx < cRow.length && cRow[cLabourIdx] !== undefined && cRow[cLabourIdx] !== null && String(cRow[cLabourIdx]).trim() !== '') {
+            labourVal = parseNum(cRow[cLabourIdx]);
+          } else if (cRow.length > 10 && cRow[10] !== undefined) {
+            labourVal = parseNum(cRow[10]);
+          }
+
+          var overheadVal = (cOverheadIdx !== -1 && cOverheadIdx < cRow.length) ? parseNum(cRow[cOverheadIdx]) : 0;
           
           var entry = { labour: labourVal, overhead: overheadVal };
           if (catKey) crewingMap[catKey] = entry;
